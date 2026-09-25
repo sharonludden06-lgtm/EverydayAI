@@ -7,7 +7,7 @@ const cell = (v: string) => `"${String(v).replace(/"/g, '""')}"`;
 
 export async function GET() {
   if (!(await isAdmin())) return new Response("Not found", { status: 404 });
-  const rows = (await getSql()`
+  const rows = (await (await getSql())`
     SELECT email, first_name, source, status, created_at
       FROM subscribers ORDER BY created_at`) as Subscriber[];
   const csv = [

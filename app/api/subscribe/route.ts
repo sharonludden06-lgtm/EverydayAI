@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return Response.json({ error: "Please enter a valid email address." }, { status: 400 });
     }
-    const sql = getSql();
+    const sql = await getSql();
     await sql`
       INSERT INTO subscribers (email, first_name, source)
       VALUES (${email}, ${firstName}, ${source})
