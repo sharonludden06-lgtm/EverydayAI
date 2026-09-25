@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 
-const links = [["/", "Home"], ["/resources", "Resources"], ["/newsletter", "The Edit"], ["/about", "About"]];
+const links = [["/", "Home"], ["/resources", "Resources"], ["/newsletter", "The Edit"], ["/work-with-us", "Work with us"], ["/about", "About"]];
 
 export function SiteHeader() {
   const path = usePathname();

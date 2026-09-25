@@ -71,6 +71,7 @@ type Message = {
   html: string;
   text: string;
   headers?: Record<string, string>;
+  replyTo?: string;
 };
 
 async function resend(path: string, payload: unknown, idempotencyKey?: string) {
@@ -91,8 +92,8 @@ async function resend(path: string, payload: unknown, idempotencyKey?: string) {
   return res.json();
 }
 
-export async function sendOne(m: Message) {
-  return resend("/emails", { from: fromAddress(), ...m, to: [m.to] });
+export async function sendOne({ replyTo, ...m }: Message) {
+  return resend("/emails", { from: fromAddress(), ...m, to: [m.to], ...(replyTo ? { reply_to: replyTo } : {}) });
 }
 
 /** Sends up to 100 emails per request. */

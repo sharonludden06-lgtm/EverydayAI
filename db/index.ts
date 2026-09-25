@@ -29,6 +29,17 @@ export type Issue = {
   send_note: string | null;
 };
 
+export type Enquiry = {
+  id: number;
+  name: string;
+  email: string;
+  organisation: string;
+  kind: "school" | "business" | "other";
+  message: string;
+  status: "new" | "replied" | "archived";
+  created_at: string;
+};
+
 export type TopicIdea = { id: number; idea: string; created_at: string; used_at: string | null };
 
 export function databaseUrl() {
@@ -65,6 +76,16 @@ const SCHEMA = [
      sent_at TIMESTAMPTZ,
      sent_count INTEGER NOT NULL DEFAULT 0,
      send_note TEXT
+   )`,
+  `CREATE TABLE IF NOT EXISTS enquiries (
+     id SERIAL PRIMARY KEY,
+     name TEXT NOT NULL,
+     email TEXT NOT NULL,
+     organisation TEXT NOT NULL DEFAULT '',
+     kind TEXT NOT NULL DEFAULT 'other',
+     message TEXT NOT NULL,
+     status TEXT NOT NULL DEFAULT 'new',
+     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
    )`,
   `CREATE TABLE IF NOT EXISTS topic_ideas (
      id SERIAL PRIMARY KEY,
