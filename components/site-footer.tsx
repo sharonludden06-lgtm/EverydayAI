@@ -1,0 +1,2 @@
+import Link from "next/link";
+export function SiteFooter(){return <footer><div className="shell footer-grid"><div className="brand footer-brand"><span className="brand-mark">E</span><span>EVERYDAY<em>AI</em></span></div><p>Small, useful ways to feel more capable with AI.</p><div><Link href="/resources">Resources</Link><Link href="/newsletter">Newsletter</Link><Link href="/about">About</Link></div></div><div className="shell footer-bottom"><span>© 2026 Everyday AI</span><span>Made for humans, with a little help from AI.</span></div></footer>}

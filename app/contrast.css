@@ -1,0 +1,125 @@
+/* Readable body copy on pale editorial surfaces. */
+.page-hero > p:last-child,
+.resource-card p,
+.resource-meta,
+.edit-strip p {
+  color: #3f4b58;
+}
+
+/* Keep the homepage's introductory guide copy crisp and readable. */
+.section-heading > p {
+  color: #344150;
+}
+
+.newsletter-band > div:last-child > p {
+  color: #344150;
+}
+
+.admin-page {
+  padding-block: 84px 120px;
+}
+
+.admin-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 32px;
+  margin-bottom: 40px;
+}
+
+.admin-heading h1 {
+  font-size: clamp(48px, 6vw, 82px);
+  line-height: 0.96;
+  margin-bottom: 14px;
+}
+
+.admin-heading > div > p:last-child {
+  color: #45515e;
+  line-height: 1.6;
+  margin-bottom: 0;
+}
+
+.admin-summary {
+  min-width: 170px;
+  padding: 22px;
+  border: 1px solid var(--line);
+  background: #eaf1ff;
+}
+
+.admin-summary strong,
+.admin-summary span {
+  display: block;
+}
+
+.admin-summary strong {
+  color: var(--blue);
+  font: 400 38px/1 Georgia, serif;
+}
+
+.admin-summary span {
+  color: #45515e;
+  font-size: 12px;
+  margin-top: 7px;
+}
+
+.subscriber-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  background: white;
+}
+
+.subscriber-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 720px;
+}
+
+.subscriber-table th,
+.subscriber-table td {
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+}
+
+.subscriber-table th {
+  color: #53606d;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.subscriber-table td {
+  color: #243242;
+  font-size: 14px;
+}
+
+.subscriber-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.subscriber-status {
+  display: inline-block;
+  padding: 5px 9px;
+  border-radius: 99px;
+  background: #e9f6ee;
+  color: #175c36;
+  font-size: 11px;
+  text-transform: capitalize;
+}
+
+.admin-empty {
+  padding: 54px 24px;
+  color: #53606d;
+  text-align: center;
+}
+
+@media (max-width: 700px) {
+  .admin-heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .admin-summary {
+    min-width: 0;
+  }
+}
