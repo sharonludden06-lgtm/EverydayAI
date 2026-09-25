@@ -173,3 +173,4 @@
 }
 @media(min-width:851px) and (max-width:1050px){.site-header nav{gap:20px}.nav-cta{font-size:12px}}
 .consult-note{margin-top:22px;font-size:14px;color:#45515e}.consult-note a{font-weight:700;color:var(--ink);border-bottom:1px solid var(--ink)}
+.about-sharon-grid p:not(.eyebrow){margin:0 0 18px}.about-sharon-grid p:last-child{margin-bottom:0}

@@ -111,7 +111,7 @@ export default function WorkWithMe() {
           <h1>AI that actually helps.<br /><em>In your school or business.</em></h1>
           <p className="hero-intro">
             Practical, safe and jargon-free training and support. Everyday AI is led by a former Assistant Headteacher and Head
-            of ICT who has spent 18 years helping people feel confident with technology.
+            of ICT who has spent 18 years bringing new technology into schools, and making sure staff feel confident using it.
           </p>
           <div className="hero-actions">
             <Link className="button button-primary" href="#schools"><School size={17} /> For schools</Link>
@@ -120,10 +120,10 @@ export default function WorkWithMe() {
           <p className="consult-note"><Link href="#enquire">Book a free consultation</Link>, with no obligation.</p>
         </div>
         <ul className="credential-list" aria-label="Our founder's background">
-          <li><strong>18+ years</strong><span>in education, from classroom teacher to Assistant Headteacher</span></li>
-          <li><strong>Head of ICT</strong><span>led departments and wrote computing curricula across four schools</span></li>
+          <li><strong>18+ years in schools</strong><span>teaching ICT, Maths and Computer Science, then leading as Head of ICT and Assistant Headteacher</span></li>
+          <li><strong>New tech that sticks</strong><span>led technology integration across a community of four schools, from first idea to everyday habit</span></li>
+          <li><strong>Systems that work</strong><span>designed and rolled out an online platform for tracking teaching, learning and pupil progress</span></li>
           <li><strong>BSc Software Development</strong><span>plus a PGDip in Educational Leadership (Warwick)</span></li>
-          <li><strong>Still teaching</strong><span>online every week, so we know how busy the job is</span></li>
         </ul>
       </section>
 
@@ -133,7 +133,7 @@ export default function WorkWithMe() {
             <p className="eyebrow"><GraduationCap size={14} /> For schools & trusts</p>
             <h2>Save teachers time.<br />Keep pupils safe.</h2>
           </div>
-          <p>Our founder has led technology across a community of schools and supported staff who were sure they &ldquo;weren&apos;t techy&rdquo;. We know what works in a real school week, and what doesn&apos;t.</p>
+          <p>Our founder has spent years introducing new technology into schools: choosing what&apos;s worth it, building the systems around it and supporting staff until it becomes second nature, including those sure they &ldquo;weren&apos;t techy&rdquo;. We know what works in a real school week, and what doesn&apos;t.</p>
         </div>
         <div className="offer-grid four">{schools.map((o) => <OfferCard key={o.title} o={o} />)}</div>
       </section>
@@ -171,16 +171,20 @@ export default function WorkWithMe() {
           <div className="portrait" aria-hidden="true"><span>E</span></div>
           <div>
             <p className="eyebrow light">Who&apos;s behind Everyday AI</p>
-            <blockquote>Making technology feel <em>doable</em> has always been the job.</blockquote>
+            <blockquote>New technology only works when people feel <em>confident</em> using it.</blockquote>
             <p>
-              Everyday AI was founded by an educator with a degree in Software Development and more than 18 years in schools: ICT
-              teacher, Head of ICT, Director of ICT and Assistant Headteacher. That meant writing computing curricula, leading
-              technology across a community of schools and helping staff use it with confidence. Our founder still teaches every
-              week, online.
+              Everyday AI was founded by an educator with a degree in Software Development and more than 18 years in schools,
+              teaching ICT, Maths and Computer Science and leading as Head of ICT, Director of ICT and Assistant Headteacher.
             </p>
             <p>
-              Everyday AI brings that experience to AI: calm, practical help for people who want it to be useful, not
-              overwhelming. We&apos;re based in Essex, working in person locally and online anywhere in the UK.
+              The thread running through it all has been bringing new technology into schools and making it stick. That has meant
+              spotting ideas worth trying, designing and rolling out systems such as an online platform for tracking teaching and
+              pupil progress, writing a computing curriculum used across four primary schools, and working alongside staff
+              through team teaching and modelling until they felt genuinely confident.
+            </p>
+            <p>
+              Everyday AI brings exactly that approach to AI: find what&apos;s genuinely useful, set it up properly, and support
+              people until it becomes second nature. We&apos;re based in Essex, working in person locally and online anywhere in the UK.
             </p>
           </div>
         </div>
