@@ -13,6 +13,24 @@ export type Subscriber = {
 // so accept the common variants rather than only DATABASE_URL.
 const URL_NAMES = ["DATABASE_URL", "POSTGRES_URL", "STORAGE_URL", "DATABASE_POSTGRES_URL", "NEON_DATABASE_URL"];
 
+export type IssueStatus = "draft" | "approved" | "sending" | "sent" | "failed";
+
+export type Issue = {
+  id: number;
+  subject: string;
+  preheader: string;
+  body: string;
+  status: IssueStatus;
+  created_at: string;
+  updated_at: string;
+  approved_at: string | null;
+  sent_at: string | null;
+  sent_count: number;
+  send_note: string | null;
+};
+
+export type TopicIdea = { id: number; idea: string; created_at: string; used_at: string | null };
+
 export function databaseUrl() {
   for (const name of URL_NAMES) {
     const v = process.env[name];
@@ -34,6 +52,25 @@ const SCHEMA = [
      unsubscribe_token TEXT NOT NULL UNIQUE DEFAULT gen_random_uuid()::text,
      created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
      unsubscribed_at TIMESTAMPTZ
+   )`,
+  `CREATE TABLE IF NOT EXISTS issues (
+     id SERIAL PRIMARY KEY,
+     subject TEXT NOT NULL,
+     preheader TEXT NOT NULL DEFAULT '',
+     body TEXT NOT NULL,
+     status TEXT NOT NULL DEFAULT 'draft',
+     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+     updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+     approved_at TIMESTAMPTZ,
+     sent_at TIMESTAMPTZ,
+     sent_count INTEGER NOT NULL DEFAULT 0,
+     send_note TEXT
+   )`,
+  `CREATE TABLE IF NOT EXISTS topic_ideas (
+     id SERIAL PRIMARY KEY,
+     idea TEXT NOT NULL,
+     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+     used_at TIMESTAMPTZ
    )`,
 ];
 

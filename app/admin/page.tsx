@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getSql, type Subscriber } from "@/db";
 import { endAdminSession, isAdmin } from "@/lib/admin-auth";
+import { AdminNav } from "@/components/admin-nav";
 
 export const metadata = { title: "Newsletter subscribers", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
@@ -24,6 +25,7 @@ export default async function AdminPage() {
 
   return (
     <main className="admin-page shell">
+      <AdminNav current="subscribers" />
       <div className="admin-heading">
         <div>
           <p className="eyebrow">Private dashboard</p>
