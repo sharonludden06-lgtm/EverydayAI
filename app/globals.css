@@ -11,31 +11,18 @@
 /* ---- Added for Vercel version: admin, unsubscribe, mobile menu ---- */
 .simple-page{max-width:640px;padding-block:110px 130px}
 .simple-page h1{font-size:clamp(44px,6vw,72px);line-height:1;margin-bottom:24px}
-.simple-page>p{color:var(--muted);line-height:1.7;font-size:17px;margin-bottom:30px}
+.simple-page>p:not(.eyebrow){color:var(--muted-foreground);line-height:1.7;font-size:17px;margin-bottom:30px}
 .simple-page form{margin:0}
 .simple-page button.button{border:0;cursor:pointer;font-family:inherit}
 .admin-login{display:grid;gap:16px;max-width:380px}
 .admin-login label{display:grid;gap:8px;font-size:13px;font-weight:700}
 .admin-login input{height:52px;border:1px solid #c5ccd4;border-radius:8px;padding:0 14px;font:15px inherit;background:white}
 .admin-login input:focus{outline:2px solid var(--blue);outline-offset:1px}
-.admin-page{padding-block:80px 120px}
-.admin-heading{display:flex;justify-content:space-between;align-items:flex-end;gap:30px;margin-bottom:40px;flex-wrap:wrap}
-.admin-heading h1{font-size:clamp(40px,5vw,64px);line-height:1;margin-bottom:14px}
-.admin-heading p:not(.eyebrow){color:var(--muted);margin:0}
+.admin-heading p:not(.eyebrow){color:var(--muted-foreground);margin:0}
 .admin-actions{display:flex;gap:24px;align-items:center;margin-top:22px}
 .admin-actions form{margin:0}
 .admin-actions button.text-link{background:none;border:0;border-bottom:1px solid #76808b;cursor:pointer;font-family:inherit;color:inherit;padding:0 0 3px}
-.admin-summary{background:var(--ink);color:white;border-radius:16px;padding:22px 30px;min-width:190px}
-.admin-summary strong{display:block;font:400 48px/1 Georgia,serif}
-.admin-summary span{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#b7c3d2}
-.subscriber-table-wrap{border:1px solid var(--line);border-radius:14px;overflow-x:auto;background:white}
-.subscriber-table{width:100%;border-collapse:collapse;font-size:14px}
-.subscriber-table th{text-align:left;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:14px 18px;border-bottom:1px solid var(--line);background:#f7f8fa;white-space:nowrap}
-.subscriber-table td{padding:14px 18px;border-bottom:1px solid #eceef1;white-space:nowrap}
-.subscriber-table tr:last-child td{border-bottom:0}
-.subscriber-status{display:inline-block;border-radius:99px;padding:4px 10px;font-size:11px;font-weight:700;background:#e9f6ee;color:#175c36}
 .subscriber-status.unsubscribed{background:#f1f2f4;color:#5b6572}
-.admin-empty{padding:40px;text-align:center;color:var(--muted)}
 .hp-field{position:absolute!important;left:-10000px!important;width:1px;height:1px;overflow:hidden}
 .menu-button{cursor:pointer;color:var(--ink)}
 .mobile-nav{display:none}
@@ -44,5 +31,4 @@
   .mobile-nav a{padding:14px 4px;font-size:16px;border-bottom:1px solid #eceef1}
   .mobile-nav a:last-child{border-bottom:0;font-weight:700;color:var(--blue)}
   .mobile-nav a.active{font-weight:700}
-  .admin-summary{width:100%}
 }

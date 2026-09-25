@@ -14,7 +14,9 @@ async function signOut() {
 export default async function AdminPage() {
   if (!(await isAdmin())) redirect("/admin/login");
 
-  const records = (await (await getSql())`
+  const sql = await getSql();
+
+  const records = (await sql`
     SELECT id, email, first_name, source, status, created_at
       FROM subscribers
      ORDER BY created_at DESC`) as Subscriber[];
