@@ -29,7 +29,8 @@ function styleHtml(html: string) {
 }
 
 export function renderIssueBodyHtml(body: string) {
-  return styleHtml(md.parse(body, { async: false }) as string);
+  const clean = body.replace(/<\/?cite\b[^>]*>/gi, "");
+  return styleHtml(md.parse(clean, { async: false }) as string);
 }
 
 export function renderEmail(opts: {

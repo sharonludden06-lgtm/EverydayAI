@@ -26,7 +26,12 @@ A small, specific time-saver someone could try this week, in numbered steps.
 
 Finish with a one-line sign-off: "Until next Sunday," on its own line, then "Everyday AI".
 
-Do not add any other sections, links you have not verified, or images.`;
+Do not add any other sections, links you have not verified, or images. Never include citation tags, footnotes or source markers in the text.`;
+
+/** Web search adds hidden source markers like <cite index="9-7">…</cite>; keep the words, drop the tags. */
+export function stripCitations(text: string) {
+  return text.replace(/<\/?cite\b[^>]*>/gi, "");
+}
 
 export type GeneratedIssue = { subject: string; preheader: string; body: string };
 
@@ -83,9 +88,9 @@ export async function generateIssue(pastSubjects: string[], ideas: string[]): Pr
         const parsed = JSON.parse(json) as GeneratedIssue;
         if (parsed.subject && parsed.body) {
           return {
-            subject: parsed.subject.trim().slice(0, 150),
-            preheader: (parsed.preheader ?? "").trim().slice(0, 200),
-            body: parsed.body.trim(),
+            subject: stripCitations(parsed.subject).trim().slice(0, 150),
+            preheader: stripCitations(parsed.preheader ?? "").trim().slice(0, 200),
+            body: stripCitations(parsed.body).trim(),
           };
         }
         lastError = "Claude's reply was missing a subject or body.";

@@ -77,6 +77,12 @@ const SCHEMA = [
      sent_count INTEGER NOT NULL DEFAULT 0,
      send_note TEXT
    )`,
+  // Tidy source markers out of drafts written before they were stripped automatically.
+  `UPDATE issues SET body = regexp_replace(body, '</?cite[^>]*>', '', 'gi'),
+                     subject = regexp_replace(subject, '</?cite[^>]*>', '', 'gi'),
+                     preheader = regexp_replace(preheader, '</?cite[^>]*>', '', 'gi')
+    WHERE status IN ('draft','approved','failed')
+      AND (body ~* '</?cite' OR subject ~* '</?cite' OR preheader ~* '</?cite')`,
   `CREATE TABLE IF NOT EXISTS enquiries (
      id SERIAL PRIMARY KEY,
      name TEXT NOT NULL,
