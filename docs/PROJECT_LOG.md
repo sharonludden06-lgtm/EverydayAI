@@ -4,9 +4,11 @@ A lightweight record of important decisions and outstanding work. Newest first. 
 
 ## Decisions
 
+- **2026-09-28**: Created the Research Agent (`.claude/agents/research-agent.md`). It runs only when asked, saves reusable notes in `research/`, and never publishes. Roles: Research finds and verifies → Content writes → Sharon approves.
+- **2026-09-28**: Research findings use Verified / Partially verified / Unverified labels instead of confidence ratings; unverified claims must be checked again before public use.
 - **2026-09-28**: Created `CLAUDE.md` as the main operating brief for Claude, based on Sharon's answers and the existing site.
 - **2026-09-28**: Keep the "Everyday AI / we / the founder" voice; don't make the site about Sharon personally for now.
-- **2026-09-28**: Specialist agents will be added later, one at a time; `.claude/agents/` is set up and empty.
+- **2026-09-28**: Specialist agents will be added later, one at a time, only when Sharon asks.
 - **2026-09-28**: No paid products until Sharon asks. Affiliate links (if ever used) must be disclosed and never drive recommendations.
 
 ## Outstanding work
@@ -16,4 +18,5 @@ A lightweight record of important decisions and outstanding work. Newest first. 
 - [ ] Newsletter is in rehearsal mode; going live needs the domain verified in Resend, then `NEWSLETTER_FROM` and `SENDING_ENABLED=true` set in Vercel (Sharon to do, or approve).
 - [ ] No automated checks (tests/linting) yet; consider adding a simple type-check.
 - [ ] Future: glossary page for technical terms.
-- [ ] Future: create specialist agents (AI Research, Content, Website, AI Adoption Consultant, Education AI) when ready.
+- [ ] Future: create the remaining specialist agents (Content, Website, AI Adoption Consultant, Education AI) when ready.
+- [ ] Future (not yet approved): a scheduled AI news/research routine.
