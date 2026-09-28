@@ -4,6 +4,9 @@ A lightweight record of important decisions and outstanding work. Newest first. 
 
 ## Decisions
 
+- **2026-09-28**: Automated Friday research planned in stages; Sonnet 5 via a separate Anthropic "Everyday AI Research" workspace capped at $10/month; Saturday may only use findings that are Verified **and** marked "Use" by Sharon (connecting to Saturday needs separate approval).
+- **2026-09-28**: Stage 0 done: research workspace, $10 limit, key saved in Vercel as `ANTHROPIC_RESEARCH_API_KEY` (Production + Preview). Vercel plan: Hobby.
+- **2026-09-28**: Stage 1: `docs/research-methodology.md` is now the single source of truth for research; `research-agent.md` points to it. Editing it will change automated research once live, so ask Sharon first.
 - **2026-09-28**: Research rule: if a primary source can't be opened for technical reasons, don't keep working around it; mark the claim Partially verified/Unverified, name the source and say what's needed to verify it. Never mark Verified from search-result summaries alone (added to `research-agent.md`).
 - **2026-09-28**: Re-checked `research/2026-09-28-weekly-ai-roundup.md` against official sources: Microsoft, Googlebook (except UK prices) and ICO findings now Verified; Opus 5.5 Free-plan claim corrected; OpenAI and Meta items still Partially verified (sites unreadable/blocked).
 
@@ -22,4 +25,5 @@ A lightweight record of important decisions and outstanding work. Newest first. 
 - [ ] No automated checks (tests/linting) yet; consider adding a simple type-check.
 - [ ] Future: glossary page for technical terms.
 - [ ] Future: create the remaining specialist agents (Content, Website, AI Adoption Consultant, Education AI) when ready.
-- [ ] Future (not yet approved): a scheduled AI news/research routine.
+- [ ] Automated research: Stage 2 (database tables + empty `/admin/research`), Stage 3 (manual "research now" + Use/Don't use), Stage 4 (Friday schedule + summary email). Stage 5 (feed Saturday) needs separate approval.
+- [ ] Verify Vercel Hobby limits (cron timing, function duration) before Stage 4; vercel.com was blocked from this environment.

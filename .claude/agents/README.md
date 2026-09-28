@@ -8,7 +8,7 @@ Every agent inherits the project brief in `/CLAUDE.md` (purpose, audience, Briti
 
 | Agent | Status | Focus |
 |---|---|---|
-| AI Research Agent | **Created**: `research-agent.md` | Finds and verifies AI tools, developments and use cases; saves reusable notes in `research/`. Does not write public content or publish. |
+| AI Research Agent | **Created**: `research-agent.md` | Finds and verifies AI tools, developments and use cases; saves reusable notes in `research/`. Does not write public content or publish. Follows the shared method in `docs/research-methodology.md`. |
 | Everyday AI Content Agent | Planned | Turns research and ideas into articles, guides, newsletter and social content in the Everyday AI voice. |
 | Website Agent | Planned | Works on the Next.js site, respecting the protected areas in `CLAUDE.md`. |
 | AI Adoption Consultant Agent | Planned | Develops practical ways businesses can adopt AI: workflows, training, governance and use cases. |
