@@ -187,6 +187,23 @@ Checked: 28 September 2026 · Re-checked: 28 September 2026 against official sou
 
 ---
 
+## What would be needed to verify the remaining claims
+
+No claim in this note is marked Verified on the strength of search-result summaries alone. To verify what's still open:
+
+| Finding | Primary source that couldn't be opened | What would be needed |
+|---|---|---|
+| 1. ChatGPT Voice | help.openai.com release notes and "ChatGPT Voice" article (HTTP 403: the site refused the request) | Allowing the domain won't help, because the site itself refuses. Sharon opens the pages in her own browser and confirms the plan, limit and approval details (or saves a copy of the page for the note). |
+| 2. GPT-6 Sol and Luna | openai.com announcement (HTTP 403) | As above: Sharon checks the announcement directly. |
+| 5. Googlebook UK prices | googlebook.google UK shop page, store.google.com (blocked by network) | Add `googlebook.google` and `store.google.com` to the environment's allowed network domains, then re-check. |
+| 7. Meta Connect / Muse, UK glasses prices | about.fb.com, meta.com, ai.meta.com (blocked by network) | Add `about.fb.com` and `www.meta.com` to the allowed domains, then re-check. |
+| 8. ICO agentic AI consultation launch | Not a blocked page: the ICO's plan page just hasn't been updated | Re-check the ICO guidance plan page later. |
+| 10. Copilot app dates | learn.microsoft.com (blocked by network) | Add `learn.microsoft.com` to the allowed domains, then re-check. |
+| 10. Gemini replacing Assistant: 4 September date, devices, "can't switch back" | Google Assistant/Gemini community updates loaded without content; 9to5google.com blocked | Sharon checks Google's announcement directly, or a Google help page stating the date is found. |
+| Canva, Perplexity (Gaps) | canva.com, perplexity.ai (blocked by network) | Add `www.canva.com` and `www.perplexity.ai` to the allowed domains, then re-check. |
+
+Network domains are changed in the cloud environment's settings (the environment menu in the session's title bar, then Edit, then Network access).
+
 ## Gaps and things not included
 - **OpenAI pages still unreadable:** openai.com and help.openai.com returned HTTP 403 Forbidden on 28 September, so findings 1 and 2 remain Partially verified. Re-check before public use.
 - **Canva:** no new AI announcement found for 21–28 September. canva.com is still blocked, so this couldn't be re-checked on the official newsroom. The most recent items previously found were the 100+ Visual Suite updates (3 September) and the Canva World Tour, which runs 14 September to 30 November with a **free AI Essentials Certification** in Design School (not re-confirmed; search summary only). Not new this week. https://www.canva.com/newsroom/news/canva-world-tour-2026/

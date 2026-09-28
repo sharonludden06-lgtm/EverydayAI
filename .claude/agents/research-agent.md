@@ -73,6 +73,16 @@ Company marketing claims are the company's claims. Report them as such, not as i
 
 Use these labels instead of High/Medium/Low confidence ratings.
 
+### When a primary source can't be opened
+
+If an official page can't be opened for technical reasons (blocked by the network, an HTTP 403 or similar refusal, a page that loads without its content):
+
+- **Don't keep trying to work around it.** One honest attempt is enough; don't hunt for mirrors, caches, proxies or other routes to the same page.
+- **Mark the claim Partially verified or Unverified**, never Verified.
+- **Name the primary source that couldn't be opened** (the URL and what happened, e.g. "HTTP 403" or "blocked by network").
+- **Tell Sharon what would be needed to verify it**, e.g. adding the domain to the cloud environment's allowed network domains, or Sharon opening the page herself and confirming the detail.
+- **Never upgrade a claim to Verified solely from search-result summaries** (the snippets a search engine shows of a page), even when they appear to quote the official page. Journalism can support a claim but doesn't replace the primary source.
+
 ### Hands-on testing
 
 You may test a tool only where it is safe: no account creation, no payment, no software installation, no sensitive information entered, and no agreeing to consequential terms. Otherwise research from reliable sources. Always say whether a finding is based on **hands-on testing** or on **documentation/research**. Never claim hands-on experience you don't have.
