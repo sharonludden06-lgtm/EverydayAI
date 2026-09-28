@@ -45,6 +45,13 @@ Sharon confirmed the one subscriber and one draft issue in Neon are only her own
 
 The database password is stored only in Sharon's password manager.
 
+## Connector change (built 28 September 2026, working branch only)
+
+- `@neondatabase/serverless` replaced with the standard `postgres` package (works with Supabase and Neon); no feature code rewritten.
+- `EVERYDAY_AI_DATABASE_URL` is used whenever it is set. If it is set but invalid, the site shows an error rather than quietly falling back to Neon.
+- `/admin` shows "Database: Supabase / Neon / Postgres" (never the address).
+- Tested end to end against a throwaway local Postgres: sign-up, enquiry, unsubscribe and re-subscribe, all admin pages, adding an idea, marking an enquiry replied, approving an issue, CSV export, and the Saturday/Sunday job database steps (no emails or AI calls possible in the test).
+
 ## Rules for the whole migration
 
 - Neon is never deleted, modified or disconnected; it stays as the fallback.

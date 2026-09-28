@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { databaseLabel } from "@/db";
 
 export function AdminNav({ current }: { current: "subscribers" | "newsletter" | "enquiries" | "research" }) {
   return (
@@ -7,6 +8,7 @@ export function AdminNav({ current }: { current: "subscribers" | "newsletter" | 
       <Link className={current === "newsletter" ? "active" : ""} href="/admin/newsletter">Newsletter</Link>
       <Link className={current === "enquiries" ? "active" : ""} href="/admin/enquiries">Enquiries</Link>
       <Link className={current === "research" ? "active" : ""} href="/admin/research">Research</Link>
+      <span className="admin-db">Database: {databaseLabel()}</span>
     </nav>
   );
 }

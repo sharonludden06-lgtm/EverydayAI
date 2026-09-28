@@ -113,7 +113,7 @@ let ready: Promise<void> | null = null;
 export async function getResearchSql() {
   const sql = await getSql();
   ready ??= (async () => {
-    for (const statement of SCHEMA) await sql.query(statement);
+    for (const statement of SCHEMA) await sql.unsafe(statement);
   })().catch((e) => {
     ready = null;
     throw e;
