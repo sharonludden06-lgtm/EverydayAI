@@ -71,7 +71,13 @@ Passed on Preview (label "Database: Supabase"):
 - Supabase Table Editor afterwards: subscribers 1, issues 1, enquiries 1 (test rows)
 - Live site checked: still the old code on Neon, showing only the original test draft. Its subscriber's "signed up from" changed to newsletter-page because Sharon also signed up once on the live site; harmless.
 
-Still to tick off: approve/un-approve on Preview, CSV download, Research tab.
+Also passed: approve/un-approve on Preview, CSV download, Research tab.
+
+## 2.5.6 Production switch
+
+- Step 1 done: Supabase test data cleared (`TRUNCATE … RESTART IDENTITY`); all six tables 0 rows, RLS still on.
+- Sharon approved the Research tab going live with the merge; Stage 3 stays paused.
+- Steps 2–5 (merge, check on Neon, switch Production, live test) each need Sharon's explicit approval.
 
 ## Rules for the whole migration
 
