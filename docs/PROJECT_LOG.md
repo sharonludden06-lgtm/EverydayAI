@@ -4,6 +4,7 @@ A lightweight record of important decisions and outstanding work. Newest first. 
 
 ## Decisions
 
+- **2026-09-28**: Stage 2 built on the working branch (not in `main`): `research_runs` and `research_findings` tables, set up separately in `db/research.ts`; read-only `/admin/research` page and nav tab. No API calls, schedules or emails.
 - **2026-09-28**: Automated Friday research planned in stages; Sonnet 5 via a separate Anthropic "Everyday AI Research" workspace capped at $10/month; Saturday may only use findings that are Verified **and** marked "Use" by Sharon (connecting to Saturday needs separate approval).
 - **2026-09-28**: Stage 0 done: research workspace, $10 limit, key saved in Vercel as `ANTHROPIC_RESEARCH_API_KEY` (Production + Preview). Vercel plan: Hobby.
 - **2026-09-28**: Stage 1: `docs/research-methodology.md` is now the single source of truth for research; `research-agent.md` points to it. Editing it will change automated research once live, so ask Sharon first.
@@ -25,5 +26,5 @@ A lightweight record of important decisions and outstanding work. Newest first. 
 - [ ] No automated checks (tests/linting) yet; consider adding a simple type-check.
 - [ ] Future: glossary page for technical terms.
 - [ ] Future: create the remaining specialist agents (Content, Website, AI Adoption Consultant, Education AI) when ready.
-- [ ] Automated research: Stage 2 (database tables + empty `/admin/research`), Stage 3 (manual "research now" + Use/Don't use), Stage 4 (Friday schedule + summary email). Stage 5 (feed Saturday) needs separate approval.
+- [ ] Automated research: Stage 2 awaiting Sharon's preview test and approval to merge; Stage 3 (manual "research now" + Use/Don't use), Stage 4 (Friday schedule + summary email). Stage 5 (feed Saturday) needs separate approval.
 - [ ] Verify Vercel Hobby limits (cron timing, function duration) before Stage 4; vercel.com was blocked from this environment.

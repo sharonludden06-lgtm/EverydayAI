@@ -99,9 +99,9 @@ A Next.js app (a popular framework for building websites with React) hosted on *
 | Shared layout | `app/layout.tsx`, `components/site-header.tsx`, `components/site-footer.tsx` | |
 | Styling | `app/globals.css`, `app/contrast.css` | Tailwind 4 plus hand-written CSS. Colours: ink `#071526`, blue `#0a45df`, cyan `#54d7ff`, ivory/paper. Georgia serif headings with blue italic `<em>` emphasis; small uppercase blue "eyebrow" labels |
 | Forms | `components/newsletter-form.tsx`, `components/enquiry-form.tsx` → `app/api/subscribe`, `app/api/enquiry` | **Protected** |
-| Admin | `app/admin/*`, `lib/admin-auth.ts` | Password-protected subscriber list, enquiries, newsletter review. **Protected** |
+| Admin | `app/admin/*`, `lib/admin-auth.ts` | Password-protected subscriber list, enquiries, newsletter review, research (`/admin/research`, read-only for now). **Protected** |
 | Newsletter system | `lib/newsletter.ts`, `lib/claude.ts`, `lib/email.ts`, `app/api/cron/*`, `vercel.json` | Saturday draft → Sharon approves → Sunday send, via Resend. **Protected** |
-| Database | `db/schema.sql`, `db/index.ts`, `scripts/migrate.mjs` | Neon Postgres; schema runs on every build. **Protected** |
+| Database | `db/index.ts`, `db/research.ts` | Neon Postgres. Tables are created automatically on first use (main tables in `db/index.ts`; research tables separately in `db/research.ts`, so a problem there can't affect sign-ups or the newsletter). `db/schema.sql` is out of date and `scripts/migrate.mjs` only checks a database is connected. **Protected** |
 | Settings/secrets | `.env.example`, Vercel environment variables, `lib/config.ts` | **Protected** |
 
 Known gaps (not bugs to fix silently): the Resources "Open guide" links point to `#` and the filter chips don't filter yet.
