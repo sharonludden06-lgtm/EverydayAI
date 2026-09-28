@@ -60,6 +60,19 @@ The database password is stored only in Sharon's password manager.
 - Preview `/admin` now shows **Database: Supabase** with 0 subscribers.
 - An accidental Production redeploy of the existing `main` code happened during this step. Checked afterwards: live `/admin` still shows the Neon test subscriber and the original tabs, so nothing changed.
 
+## 2.5.5 Preview testing on Supabase (28 September 2026)
+
+Passed on Preview (label "Database: Supabase"):
+
+- Newsletter sign-up, Work with us enquiry, Mark as replied
+- Unsubscribe via token (copied from Supabase), then re-subscribe
+- Add and remove a topic idea
+- "Write a draft now" created a draft; "Save & email me a test" arrived in Sharon's inbox
+- Supabase Table Editor afterwards: subscribers 1, issues 1, enquiries 1 (test rows)
+- Live site checked: still the old code on Neon, showing only the original test draft. Its subscriber's "signed up from" changed to newsletter-page because Sharon also signed up once on the live site; harmless.
+
+Still to tick off: approve/un-approve on Preview, CSV download, Research tab.
+
 ## Rules for the whole migration
 
 - Neon is never deleted, modified or disconnected; it stays as the fallback.
