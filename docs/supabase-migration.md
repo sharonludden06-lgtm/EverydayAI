@@ -28,6 +28,23 @@ Checked by Sharon in the Neon SQL Editor (counts only).
 - The Stage 2 research tables exist in the live database, and Neon has only one branch. The research tables were only ever created by the Stage 2 **Preview**, so **Preview and Production currently share the same Neon database**.
 - The data is very small (two rows in total), which keeps the copy simple.
 
+## Decision: no data migration
+
+Sharon confirmed the one subscriber and one draft issue in Neon are only her own tests. Supabase starts fresh with the same table structure; no data is copied. Neon stays untouched as a fallback.
+
+## 2.5.2 Supabase project (done 28 September 2026)
+
+| Item | Value |
+|---|---|
+| Project | `everyday-ai` (organisation: clarity-education, Free plan) |
+| Region | West Europe (London), eu-west-2 |
+| Data API | Off; "Automatically expose new tables" off |
+| Automatic RLS | On |
+| Tables | `subscribers`, `issues`, `enquiries`, `topic_ideas`, `research_runs`, `research_findings`: same structure as `db/index.ts` and `db/research.ts`, all empty |
+| Security | Row Level Security on for all six tables; `anon` and `authenticated` roles have no access. Security Advisor: no errors. |
+
+The database password is stored only in Sharon's password manager.
+
 ## Rules for the whole migration
 
 - Neon is never deleted, modified or disconnected; it stays as the fallback.
