@@ -10,14 +10,14 @@ The Everyday AI website and newsletter sign-up, as a Next.js app hosted on Verce
 
 ## Setup on Vercel
 1. Import this repo in Vercel (Framework: Next.js; the defaults are fine).
-2. **Storage → Create Database → Neon (Postgres)** and connect it to this project. This adds `DATABASE_URL`.
+2. Create a Supabase project (London region, Data API off, RLS on) and add its **Transaction pooler** connection address as `EVERYDAY_AI_DATABASE_URL`. (Any other Postgres works too; the site originally used Neon via `DATABASE_URL`, still used as a fallback when `EVERYDAY_AI_DATABASE_URL` isn't set. See `docs/supabase-migration.md`.)
 3. **Settings → Environment Variables**: add `ADMIN_PASSWORD` (long, private).
-4. Redeploy. The subscriber table is created automatically during the build (`scripts/migrate.mjs`).
+4. Redeploy. Tables are created automatically on first use (`db/index.ts`, `db/research.ts`).
 
 ## Local development
 ```bash
 npm install
-cp .env.example .env.local   # fill in DATABASE_URL and ADMIN_PASSWORD
+cp .env.example .env.local   # fill in EVERYDAY_AI_DATABASE_URL and ADMIN_PASSWORD
 npm run dev
 ```
 

@@ -1,11 +1,14 @@
 import Link from "next/link";
+import { databaseLabel } from "@/db";
 
-export function AdminNav({ current }: { current: "subscribers" | "newsletter" | "enquiries" }) {
+export function AdminNav({ current }: { current: "subscribers" | "newsletter" | "enquiries" | "research" }) {
   return (
     <nav className="admin-tabs" aria-label="Admin sections">
       <Link className={current === "subscribers" ? "active" : ""} href="/admin">Subscribers</Link>
       <Link className={current === "newsletter" ? "active" : ""} href="/admin/newsletter">Newsletter</Link>
       <Link className={current === "enquiries" ? "active" : ""} href="/admin/enquiries">Enquiries</Link>
+      <Link className={current === "research" ? "active" : ""} href="/admin/research">Research</Link>
+      <span className="admin-db">Database: {databaseLabel()}</span>
     </nav>
   );
 }

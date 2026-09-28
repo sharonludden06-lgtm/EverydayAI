@@ -1,4 +1,4 @@
-import { neon } from "@neondatabase/serverless";
+import postgres from "postgres";
 
 export type Subscriber = {
   id: number;
@@ -42,7 +42,14 @@ export type Enquiry = {
 
 export type TopicIdea = { id: number; idea: string; created_at: string; used_at: string | null };
 
+/** The chosen database. If EVERYDAY_AI_DATABASE_URL is set it always wins (and must be valid). */
 export function databaseUrl() {
+  const chosen = process.env.EVERYDAY_AI_DATABASE_URL?.trim();
+  if (chosen) {
+    // Never fall back quietly to another database if the chosen one is mistyped.
+    if (!chosen.startsWith("postgres")) throw new Error("EVERYDAY_AI_DATABASE_URL isn't a Postgres connection address.");
+    return chosen;
+  }
   for (const name of URL_NAMES) {
     const v = process.env[name];
     if (v && v.startsWith("postgres")) return v;
@@ -101,15 +108,46 @@ const SCHEMA = [
    )`,
 ];
 
+/** Which service the chosen database is on, for display in /admin. Never shows the address itself. */
+export function databaseLabel() {
+  try {
+    const url = databaseUrl();
+    if (!url) return "Not connected";
+    const host = new URL(url).hostname;
+    if (host.includes("supabase")) return "Supabase";
+    if (host.includes("neon.tech")) return "Neon";
+    return "Postgres";
+  } catch {
+    return "Not connected";
+  }
+}
+
+// One shared connection pool per server instance. Works with both Supabase and Neon.
+let client: postgres.Sql | null = null;
+function connect(url: string) {
+  // Drop options like ?sslmode=…&channel_binding=… (Neon) or ?pgbouncer=true (Supabase):
+  // this connector would pass unknown ones to the server, which rejects them. SSL is set below instead.
+  const clean = new URL(url);
+  const local = ["localhost", "127.0.0.1"].includes(clean.hostname);
+  clean.search = "";
+  client ??= postgres(clean.toString(), {
+    max: 3,
+    idle_timeout: 20,
+    prepare: false, // required by Supabase's transaction pooler
+    ssl: local ? false : "require",
+  });
+  return client;
+}
+
 let ready: Promise<void> | null = null;
 
 /** Returns a query function, creating the tables first if they don't exist yet. */
 export async function getSql() {
   const url = databaseUrl();
-  if (!url) throw new Error("No Postgres connection setting found (expected DATABASE_URL).");
-  const sql = neon(url);
+  if (!url) throw new Error("No Postgres connection setting found (expected EVERYDAY_AI_DATABASE_URL or DATABASE_URL).");
+  const sql = connect(url);
   ready ??= (async () => {
-    for (const statement of SCHEMA) await sql.query(statement);
+    for (const statement of SCHEMA) await sql.unsafe(statement);
   })().catch((e) => {
     ready = null;
     throw e;
