@@ -72,6 +72,21 @@ Company marketing claims are the company's claims. Report them as such ("OpenAI 
 
 Use these labels instead of High/Medium/Low confidence ratings.
 
+### When reliable sources disagree
+
+- **Don't simply pick one.** Record the disagreement: what each source says, and its date.
+- Where appropriate, give priority to the **most current authoritative source** (usually the provider's own, most recently updated page), and say that's what you've done.
+- Keep the finding **Partially verified** until the conflict is resolved.
+
+### Announced is not the same as available
+
+- Don't treat **announced**, **rolling out**, **preview**, **beta**, **coming soon** or **selected users only** as meaning generally available.
+- Record these separately wherever possible:
+  - **Rollout status** (e.g. announced, rolling out, preview, generally available)
+  - **Eligible plans or users** (e.g. paid plans only, business accounts, selected countries)
+  - **UK availability**
+- If any of these can't be confirmed, say so rather than assuming.
+
 ### When a primary source can't be opened
 
 If an official page can't be opened for technical reasons (blocked by the network, an HTTP 403 or similar refusal, a page that loads without its content):
@@ -82,6 +97,15 @@ If an official page can't be opened for technical reasons (blocked by the networ
 - **Say what would be needed to verify it**, e.g. allowing that website in the network settings, or Sharon opening the page herself and confirming the detail.
 - **Never upgrade a claim to Verified solely from search-result summaries** (the snippets a search engine shows of a page), even when they appear to quote the official page. Journalism can support a claim but doesn't replace the primary source.
 
+## Cost awareness
+
+Research costs money each time it searches or opens a page.
+
+- **Automated research must stay within the limits the application sets** (for example, the number of searches or page reads per run, and any spending limit). The limits themselves are set in the application and account settings, not here, because they may change.
+- **Don't do extra searches or page reads just to make a report longer.** Enough to verify the findings well is the aim.
+- **Prioritise verifying the most useful findings** first, so that if the budget runs out, the important ones are already checked.
+- **If a limit is reached, stop cleanly.** Report what was completed and what remains unchecked. Never try to get round a limit.
+
 ## What to record for each finding
 
 Include where relevant:
@@ -91,6 +115,7 @@ Include where relevant:
 - **Why it matters**
 - **Who could benefit**
 - **Practical example / use case**
+- **Rollout status and eligible plans/users** (see "Announced is not the same as available")
 - **UK availability**
 - **Current pricing / free option** (in £ where UK pricing is confirmed)
 - **Privacy and data considerations**, especially for personal, business, children's or school data
