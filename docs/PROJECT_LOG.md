@@ -4,6 +4,7 @@ A lightweight record of important decisions and outstanding work. Newest first. 
 
 ## Decisions
 
+- **2026-09-28**: Stage 3 paused; standardising on Supabase first (Stage 2.5, plan in `docs/supabase-migration.md`). 2.5.1 before-state recorded: Neon London, `main` branch only, 1 subscriber, 1 draft issue, other tables empty. Preview and Production share the same Neon database.
 - **2026-09-28**: Stage 2 built on the working branch (not in `main`): `research_runs` and `research_findings` tables, set up separately in `db/research.ts`; read-only `/admin/research` page and nav tab. No API calls, schedules or emails.
 - **2026-09-28**: Automated Friday research planned in stages; Sonnet 5 via a separate Anthropic "Everyday AI Research" workspace capped at $10/month; Saturday may only use findings that are Verified **and** marked "Use" by Sharon (connecting to Saturday needs separate approval).
 - **2026-09-28**: Stage 0 done: research workspace, $10 limit, key saved in Vercel as `ANTHROPIC_RESEARCH_API_KEY` (Production + Preview). Vercel plan: Hobby.

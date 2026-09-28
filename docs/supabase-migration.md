@@ -1,0 +1,37 @@
+# Neon → Supabase migration (Stage 2.5)
+
+Working record for moving the Everyday AI database from Neon to Supabase. No secrets, connection strings or personal data belong in this file.
+
+## 2.5.1 Before-state (checked 28 September 2026, read-only)
+
+Checked by Sharon in the Neon SQL Editor (counts only).
+
+| Item | Value |
+|---|---|
+| Provider | Neon (via Vercel Storage), connected with `@neondatabase/serverless` in `db/index.ts` |
+| Region | AWS Europe West 2 (London) |
+| Branches | `main` only |
+| Database | `neondb` |
+| PostgreSQL | 18.6 |
+
+| Table | Rows | Status totals |
+|---|---|---|
+| `subscribers` | 1 | subscribed: 1 |
+| `issues` | 1 | draft: 1 |
+| `topic_ideas` | 0 | |
+| `enquiries` | 0 | |
+| `research_runs` | 0 | |
+| `research_findings` | 0 | |
+
+**What this tells us**
+
+- The Stage 2 research tables exist in the live database, and Neon has only one branch. The research tables were only ever created by the Stage 2 **Preview**, so **Preview and Production currently share the same Neon database**.
+- The data is very small (two rows in total), which keeps the copy simple.
+
+## Rules for the whole migration
+
+- Neon is never deleted, modified or disconnected; it stays as the fallback.
+- Preview moves to Supabase first; Production only after Sharon's explicit approval.
+- New setting name: `EVERYDAY_AI_DATABASE_URL` (checked first; if missing, the site falls back to today's Neon setting).
+- Row Level Security on for every Supabase table; Supabase's public keys aren't used.
+- No secrets in chat, in this repository, or in the Claude cloud environment unless Sharon agrees there's no safer practical option.
