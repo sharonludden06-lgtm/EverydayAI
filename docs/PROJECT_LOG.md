@@ -4,6 +4,7 @@ A lightweight record of important decisions and outstanding work. Newest first. 
 
 ## Decisions
 
+- **2026-09-28**: Preview now uses Supabase via `EVERYDAY_AI_DATABASE_URL` (Preview only); Production still on Neon. Next: full Preview testing (2.5.5).
 - **2026-09-28**: Database connector switched to the standard `postgres` package on the working branch; `EVERYDAY_AI_DATABASE_URL` takes priority over the Neon setting. Not merged; Preview not yet connected to Supabase.
 - **2026-09-28**: No Neon data to migrate (test rows only). Stage 2.5.2 done: Supabase `everyday-ai` project (London), six empty tables, RLS on, Data API off. Production still on Neon.
 - **2026-09-28**: Stage 3 paused; standardising on Supabase first (Stage 2.5, plan in `docs/supabase-migration.md`). 2.5.1 before-state recorded: Neon London, `main` branch only, 1 subscriber, 1 draft issue, other tables empty. Preview and Production share the same Neon database.

@@ -52,6 +52,14 @@ The database password is stored only in Sharon's password manager.
 - `/admin` shows "Database: Supabase / Neon / Postgres" (never the address).
 - Tested end to end against a throwaway local Postgres: sign-up, enquiry, unsubscribe and re-subscribe, all admin pages, adding an idea, marking an enquiry replied, approving an issue, CSV export, and the Saturday/Sunday job database steps (no emails or AI calls possible in the test).
 
+## 2.5.4 Preview connected to Supabase (28 September 2026)
+
+- Supabase database password reset to letters and numbers only (symbols can break a web-style address).
+- `EVERYDAY_AI_DATABASE_URL` (Transaction pooler, eu-west-2, port 6543) added in Vercel for **Preview only**, marked Sensitive.
+- First attempt failed with "password authentication failed"; fixed by re-entering the address with the new password and redeploying the Preview.
+- Preview `/admin` now shows **Database: Supabase** with 0 subscribers.
+- An accidental Production redeploy of the existing `main` code happened during this step. Checked afterwards: live `/admin` still shows the Neon test subscriber and the original tabs, so nothing changed.
+
 ## Rules for the whole migration
 
 - Neon is never deleted, modified or disconnected; it stays as the fallback.
