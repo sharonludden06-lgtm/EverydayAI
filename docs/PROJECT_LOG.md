@@ -4,6 +4,8 @@ A lightweight record of important decisions and outstanding work. Newest first. 
 
 ## Decisions
 
+- **2026-09-28**: Re-checked `research/2026-09-28-weekly-ai-roundup.md` against official sources: Microsoft, Googlebook (except UK prices) and ICO findings now Verified; Opus 5.5 Free-plan claim corrected; OpenAI and Meta items still Partially verified (sites unreadable/blocked).
+
 - **2026-09-28**: Created the Research Agent (`.claude/agents/research-agent.md`). It runs only when asked, saves reusable notes in `research/`, and never publishes. Roles: Research finds and verifies → Content writes → Sharon approves.
 - **2026-09-28**: Research findings use Verified / Partially verified / Unverified labels instead of confidence ratings; unverified claims must be checked again before public use.
 - **2026-09-28**: Created `CLAUDE.md` as the main operating brief for Claude, based on Sharon's answers and the existing site.
