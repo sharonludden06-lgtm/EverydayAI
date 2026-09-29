@@ -226,7 +226,7 @@ export function realDate(value: string) {
   return d.getUTCFullYear() === +m[1] && d.getUTCMonth() === +m[2] - 1 && d.getUTCDate() === +m[3] ? value : null;
 }
 
-/** Applies the verification rule in code: "verified" needs an official source that was actually opened. */
+/** Applies the verification rule in code: "verified" needs an official source that was actually opened in this step. */
 export function checkFindings(raw: unknown, opened: Set<string>, checkedAt: string) {
   const list = Array.isArray((raw as { findings?: unknown })?.findings) ? (raw as { findings: unknown[] }).findings : [];
   return list.slice(0, 10).map((item) => {
@@ -244,7 +244,7 @@ export function checkFindings(raw: unknown, opened: Set<string>, checkedAt: stri
     let note = text(f.verification_note);
     if (status === "verified" && !sources.some((s) => s.type === "official" && s.opened)) {
       status = "partially_verified";
-      note = `${note ? `${note} ` : ""}[Automatic check: no official page was opened in this run, so this can't be marked Verified.]`;
+      note = `${note ? `${note} ` : ""}[Automatic check: no official page was opened in this step, so this can't be marked Verified.]`;
     }
     return {
       title: text(f.title, 300) || "Untitled finding",
