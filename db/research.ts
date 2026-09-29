@@ -22,6 +22,7 @@ export type ResearchRun = {
   week_of: string;
   area: ResearchArea;
   trigger: "manual" | "scheduled";
+  environment: "live" | "preview" | "local" | "unknown";
   status: RunStatus;
   model: string;
   started_at: string;
@@ -105,6 +106,8 @@ const SCHEMA = [
      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
    )`,
   `CREATE INDEX IF NOT EXISTS research_findings_run_idx ON research_findings (run_id)`,
+  // Stage 3: label each run with where it ran, so Preview test runs are easy to spot and delete.
+  `ALTER TABLE research_runs ADD COLUMN IF NOT EXISTS environment TEXT NOT NULL DEFAULT 'unknown'`,
 ];
 
 let ready: Promise<void> | null = null;

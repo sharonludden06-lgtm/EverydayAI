@@ -62,10 +62,27 @@
 .research-key ul,.research-list{list-style:none;margin:12px 0 32px;padding:0}
 .research-key li{display:flex;align-items:center;gap:12px;font-size:14px;color:#3d4753;margin-bottom:8px}
 .research-list li{border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin-bottom:12px;background:white}
-.research-list strong{font:400 19px/1.3 Georgia,serif;color:var(--ink)}
+.research-list .research-title{display:block;font:400 19px/1.3 Georgia,serif;color:var(--ink)}
+.research-list .decision-tag{font-weight:700;color:#175c36}
+.research-list details strong{font-weight:600;font-size:14px;color:var(--ink)}
 .research-list p{margin:8px 0 0;font-size:14px;line-height:1.55;color:#3d4753}
 .research-meta{display:flex;flex-wrap:wrap;align-items:center;gap:10px;font-size:12px;color:#5b6572;margin-bottom:8px}
 .research-note{color:#5b6572!important;font-size:13px!important}
+.research-run-box{border:1px solid var(--line);background:#f7f9ff;border-radius:10px;padding:20px 22px;margin-bottom:32px}
+.research-run-box p{font-size:13px;color:#4a5563;margin:6px 0 14px}
+.research-buttons{display:flex;flex-wrap:wrap;gap:10px}
+.research-list details{margin-top:10px;font-size:14px}
+.research-list summary{cursor:pointer;color:var(--blue);font-weight:600}
+.research-sources{list-style:none;padding:0;margin:10px 0 0}
+.research-sources li{border:0;padding:4px 0;margin:0;font-size:13px}
+.research-sources .opened{color:#175c36;font-weight:700}
+.research-sources .not-opened{color:#a52832;font-weight:700}
+.research-sources .source-type{color:#5b6572;text-transform:capitalize}
+.research-decision{display:flex;gap:16px;margin-top:10px}
+.research-decision button:disabled{opacity:.45;cursor:default}
+.env-tag{border-radius:99px;padding:3px 9px;font-weight:700;background:#eef0f3;color:#3d4753}
+.env-tag.preview,.env-tag.local{background:#fff1cc;color:#6b4e00}
+.env-tag.live{background:#e3ecff;color:#0a3aa8}
 .idea-box{border:1px solid var(--line);background:#f7f9ff;padding:24px}
 .idea-box>p{font-size:13px;color:#4a5563;line-height:1.55;margin:10px 0 16px}
 .idea-form{display:flex;gap:8px}
