@@ -4,6 +4,7 @@ A lightweight record of important decisions and outstanding work. Newest first. 
 
 ## Decisions
 
+- **2026-09-29**: Research engine: after the first findings, one follow-up verification pass uses remaining allowance on open questions (official sources first), only when worthwhile; caps, window and checks unchanged. Working branch only.
 - **2026-09-29**: Stage 3 approved and built on the working branch (not in `main`): manual research per area, 8 searches / 8 pages per run, $2.50 weekly cap, 7-day window, four areas, Use/Don't use, deletable runs labelled Preview/Live. Tested locally with a stand-in API; awaiting Sharon's Preview test.
 - **2026-09-29**: Live site switched to Supabase (Stage 2.5 complete) after merging sharonludden06-lgtm/EverydayAI#1 and adding `EVERYDAY_AI_DATABASE_URL` for Production. Live sign-up and enquiry tested. Neon kept untouched as fallback.
 - **2026-09-28**: Preview now uses Supabase via `EVERYDAY_AI_DATABASE_URL` (Preview only); Production still on Neon. Next: full Preview testing (2.5.5).
