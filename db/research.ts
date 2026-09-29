@@ -4,7 +4,7 @@ import { getSql } from "@/db";
 // so a problem here can only affect /admin/research, never sign-ups or the newsletter.
 
 export type ResearchArea = "tools" | "business" | "schools" | "privacy";
-export type RunStatus = "running" | "complete" | "partial" | "failed" | "stopped_limit";
+export type RunStatus = "running" | "complete" | "partial" | "failed" | "stopped_limit" | "interrupted";
 export type VerificationStatus = "verified" | "partially_verified" | "unverified";
 export type FindingDecision = "undecided" | "use" | "dont_use";
 
@@ -22,10 +22,12 @@ export type ResearchRun = {
   week_of: string;
   area: ResearchArea;
   trigger: "manual" | "scheduled";
+  environment: "live" | "preview" | "local" | "unknown";
   status: RunStatus;
   model: string;
   started_at: string;
   finished_at: string | null;
+  last_activity_at: string | null;
   searches_used: number;
   pages_opened: number;
   input_tokens: number;
@@ -33,6 +35,48 @@ export type ResearchRun = {
   estimated_cost_usd: string; // NUMERIC comes back as a string
   unchecked_notes: string | null;
   error: string | null;
+  // Step-by-step runs (older one-request runs have no plan).
+  plan: ResearchPlan | null;
+  fetches_used: number;
+  step_lock_id: string | null;
+  step_lock_until: string | null;
+};
+
+export type StepStatus = "pending" | "in_progress" | "done" | "failed" | "cut_off" | "skipped" | "dropped";
+
+export type ResearchCandidate = {
+  title: string;
+  event_date: string;
+  summary: string;
+  official_urls: string[];
+  other_urls: string[];
+  status: StepStatus;
+  note: string;
+  finding_id: number | null;
+};
+
+export type ResearchStepLog = {
+  n: number;
+  kind: "discovery" | "verify";
+  label: string;
+  started_at: string;
+  finished_at: string | null;
+  searches: number;
+  fetches: number; // page-read attempts (these count towards the limit)
+  pages: number; // pages actually opened
+  cost: number;
+  outcome: "running" | "done" | "failed" | "cut_off" | "dropped";
+  note: string;
+};
+
+/** Everything a step-by-step run needs to carry on from where it stopped. Saved in research_runs.plan. */
+export type ResearchPlan = {
+  version: 1;
+  discovery: { status: StepStatus; note: string };
+  candidates: ResearchCandidate[];
+  unchecked: string;
+  stop_reason: string;
+  steps: ResearchStepLog[];
 };
 
 export type ResearchFinding = {
@@ -105,6 +149,15 @@ const SCHEMA = [
      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
    )`,
   `CREATE INDEX IF NOT EXISTS research_findings_run_idx ON research_findings (run_id)`,
+  // Stage 3: label each run with where it ran, so Preview test runs are easy to spot and delete.
+  `ALTER TABLE research_runs ADD COLUMN IF NOT EXISTS environment TEXT NOT NULL DEFAULT 'unknown'`,
+  // Updated after every reply from Anthropic; used to spot runs the server abandoned.
+  `ALTER TABLE research_runs ADD COLUMN IF NOT EXISTS last_activity_at TIMESTAMPTZ`,
+  // Step-by-step runs: the saved plan, page-read attempts, and a short-lived lock so only one step runs at a time.
+  `ALTER TABLE research_runs ADD COLUMN IF NOT EXISTS plan JSONB`,
+  `ALTER TABLE research_runs ADD COLUMN IF NOT EXISTS fetches_used INTEGER NOT NULL DEFAULT 0`,
+  `ALTER TABLE research_runs ADD COLUMN IF NOT EXISTS step_lock_id TEXT`,
+  `ALTER TABLE research_runs ADD COLUMN IF NOT EXISTS step_lock_until TIMESTAMPTZ`,
 ];
 
 let ready: Promise<void> | null = null;

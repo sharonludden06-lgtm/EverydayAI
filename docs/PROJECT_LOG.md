@@ -4,6 +4,12 @@ A lightweight record of important decisions and outstanding work. Newest first. 
 
 ## Decisions
 
+- **2026-09-29**: Real Preview test of step-by-step research (AI tools & features, run 4) passed, and a read-only Supabase integrity check passed on all eight points: 5 steps, 4 findings, 5 searches / 5 page reads, ~$0.44. Awaiting Sharon's approval to merge to `main`.
+- **2026-09-29**: A single long research request never returned (third Preview run failed). Replaced, on the working branch, with bounded resumable steps (search step, then one step per candidate), run-wide 8/8 limits and $2.50 weekly cap, step lock, no repeats of finished or cut-off steps. Tested locally with a stand-in API; awaiting one real Preview test (AI tools & features only).
+- **2026-09-29**: A Preview research run hit Vercel's 300-second limit (FUNCTION_INVOCATION_TIMEOUT) and stayed 'Running'. Fixed on the working branch: progress saved per reply, no retries, 240 s budget, stuck runs marked Interrupted by last activity, Interrupted/Failed runs deletable. Admin dates now shown in UK time (`Europe/London`); CSV gains a UK-time column; newsletter "Today is" uses the UK date.
+- **2026-09-29**: Research engine: after the first findings, one follow-up verification pass uses remaining allowance on open questions (official sources first), only when worthwhile; caps, window and checks unchanged. Working branch only.
+- **2026-09-29**: Stage 3 approved and built on the working branch (not in `main`): manual research per area, 8 searches / 8 pages per run, $2.50 weekly cap, 7-day window, four areas, Use/Don't use, deletable runs labelled Preview/Live. Tested locally with a stand-in API; awaiting Sharon's Preview test.
+- **2026-09-29**: Live site switched to Supabase (Stage 2.5 complete) after merging sharonludden06-lgtm/EverydayAI#1 and adding `EVERYDAY_AI_DATABASE_URL` for Production. Live sign-up and enquiry tested. Neon kept untouched as fallback.
 - **2026-09-28**: Preview now uses Supabase via `EVERYDAY_AI_DATABASE_URL` (Preview only); Production still on Neon. Next: full Preview testing (2.5.5).
 - **2026-09-28**: Database connector switched to the standard `postgres` package on the working branch; `EVERYDAY_AI_DATABASE_URL` takes priority over the Neon setting. Not merged; Preview not yet connected to Supabase.
 - **2026-09-28**: No Neon data to migrate (test rows only). Stage 2.5.2 done: Supabase `everyday-ai` project (London), six empty tables, RLS on, Data API off. Production still on Neon.
@@ -30,5 +36,6 @@ A lightweight record of important decisions and outstanding work. Newest first. 
 - [ ] No automated checks (tests/linting) yet; consider adding a simple type-check.
 - [ ] Future: glossary page for technical terms.
 - [ ] Future: create the remaining specialist agents (Content, Website, AI Adoption Consultant, Education AI) when ready.
-- [ ] Automated research: Stage 2 awaiting Sharon's preview test and approval to merge; Stage 3 (manual "research now" + Use/Don't use), Stage 4 (Friday schedule + summary email). Stage 5 (feed Saturday) needs separate approval.
+- [ ] Supabase fallback period: watch the first Saturday draft and Sunday send; later decide whether to retire Neon (Sharon's approval).
+- [ ] Automated research: Stage 3 (now step-by-step) built and Preview-tested on the working branch, awaiting merge approval and merge approval; Stage 3 (manual "research now" + Use/Don't use), Stage 4 (Friday schedule + summary email). Stage 5 (feed Saturday) needs separate approval.
 - [ ] Verify Vercel Hobby limits (cron timing, function duration) before Stage 4; vercel.com was blocked from this environment.

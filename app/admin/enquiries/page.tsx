@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { getSql, type Enquiry } from "@/db";
 import { isAdmin } from "@/lib/admin-auth";
 import { AdminNav } from "@/components/admin-nav";
+import { ukDate } from "@/lib/uk-time";
 
 export const metadata = { title: "Enquiries", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
@@ -49,7 +50,7 @@ export default async function EnquiriesAdmin() {
                 <strong>{r.name}</strong>
                 {r.organisation && <span>{r.organisation}</span>}
                 <span className={`kind ${r.kind}`}>{KIND[r.kind] ?? r.kind}</span>
-                <span>{new Date(r.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</span>
+                <span>{ukDate(r.created_at)}</span>
               </div>
               <p>{r.message}</p>
               <div className="enquiry-actions">

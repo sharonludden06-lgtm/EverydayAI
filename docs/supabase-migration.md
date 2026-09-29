@@ -77,7 +77,18 @@ Also passed: approve/un-approve on Preview, CSV download, Research tab.
 
 - Step 1 done: Supabase test data cleared (`TRUNCATE … RESTART IDENTITY`); all six tables 0 rows, RLS still on.
 - Sharon approved the Research tab going live with the merge; Stage 3 stays paused.
-- Steps 2–5 (merge, check on Neon, switch Production, live test) each need Sharon's explicit approval.
+- Step 2 done (29 September): PR sharonludden06-lgtm/EverydayAI#1 merged into `main` with Sharon's approval.
+- Step 3 done: live `/admin` shows "Database: Neon", the existing subscriber and the Research tab.
+- Step 4 done (29 September, approved by Sharon): `EVERYDAY_AI_DATABASE_URL` ticked for Production (value unchanged) and Production redeployed from `main`. Live `/admin` shows "Database: Supabase"; all tabs load.
+- Step 5 done: live sign-up and enquiry both saved to Supabase.
+
+**The live site now uses Supabase.**
+
+## 2.5.7 Fallback period (in progress)
+
+- Neon and its Vercel setting are untouched. To go back: untick Production on `EVERYDAY_AI_DATABASE_URL` and redeploy Production. Before going back, copy any new sign-ups/unsubscribes from Supabase into Neon so nobody who unsubscribed is emailed.
+- Watch the first Saturday draft and Sunday send on Supabase.
+- After a few weeks without problems, Sharon decides whether to retire Neon (separate approval).
 
 ## Rules for the whole migration
 

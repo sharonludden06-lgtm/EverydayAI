@@ -60,7 +60,7 @@ async function callClaude(model: string, user: string, withSearch: boolean) {
 export async function generateIssue(pastSubjects: string[], ideas: string[]): Promise<GeneratedIssue> {
   if (!process.env.ANTHROPIC_API_KEY) throw new Error("ANTHROPIC_API_KEY is not set in Vercel.");
 
-  const today = new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+  const today = new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "Europe/London" });
   const user = [
     `Write this week's issue. Today is ${today}; it will be sent on Sunday morning.`,
     ideas.length

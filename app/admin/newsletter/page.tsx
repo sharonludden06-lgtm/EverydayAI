@@ -7,6 +7,7 @@ import { adminEmail, sendingEnabled } from "@/lib/config";
 import { createDraft } from "@/lib/newsletter";
 import { AdminNav, IssueStatus } from "@/components/admin-nav";
 import { PendingButton } from "@/components/pending-button";
+import { ukDate } from "@/lib/uk-time";
 
 export const metadata = { title: "Newsletter", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
@@ -47,8 +48,7 @@ async function removeIdea(formData: FormData) {
   revalidatePath("/admin/newsletter");
 }
 
-const fmt = (d: string | null) =>
-  d ? new Date(d).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" }) : "—";
+const fmt = (d: string | null) => ukDate(d, { weekday: "short", day: "numeric", month: "short" });
 
 export default async function NewsletterAdmin({
   searchParams,
