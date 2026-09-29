@@ -77,7 +77,9 @@ Also passed: approve/un-approve on Preview, CSV download, Research tab.
 
 - Step 1 done: Supabase test data cleared (`TRUNCATE … RESTART IDENTITY`); all six tables 0 rows, RLS still on.
 - Sharon approved the Research tab going live with the merge; Stage 3 stays paused.
-- Steps 2–5 (merge, check on Neon, switch Production, live test) each need Sharon's explicit approval.
+- Step 2 done (29 September): PR sharonludden06-lgtm/EverydayAI#1 merged into `main` with Sharon's approval.
+- Step 3 done: live `/admin` shows "Database: Neon", the existing subscriber and the Research tab.
+- Steps 4–5 (switch Production, live test) need Sharon's explicit approval.
 
 ## Rules for the whole migration
 
