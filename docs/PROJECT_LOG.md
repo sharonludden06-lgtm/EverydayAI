@@ -4,6 +4,7 @@ A lightweight record of important decisions and outstanding work. Newest first. 
 
 ## Decisions
 
+- **2026-09-29**: Stage 4 approved and built on the working branch (not in `main`): six Friday Vercel cron jobs (Sharon confirmed from Vercel's official docs, updated 15 July 2026, that Hobby allows 100 cron jobs, once a day each, ±59 min), all four areas, summary email to the admin address, on/off switch off by default, $2.50 Friday–Thursday research-week limit plus a new $8.00 calendar-month safety limit ($10 Anthropic limit as backstop). Tested locally with stand-in services; Preview test next.
 - **2026-09-29**: Step-by-step research and UK admin times are live: merged sharonludden06-lgtm/EverydayAI#2; the Production deployment was Ready, and Sharon checked the public site and the Subscribers, Newsletter and Research admin pages; all correct. No live research run yet.
 - **2026-09-29**: Real Preview test of step-by-step research (AI tools & features, run 4) passed, and a read-only Supabase integrity check passed on all eight points: 5 steps, 4 findings, 5 searches / 5 page reads, ~$0.44. Awaiting Sharon's approval to merge to `main`.
 - **2026-09-29**: A single long research request never returned (third Preview run failed). Replaced, on the working branch, with bounded resumable steps (search step, then one step per candidate), run-wide 8/8 limits and $2.50 weekly cap, step lock, no repeats of finished or cut-off steps. Tested locally with a stand-in API; awaiting one real Preview test (AI tools & features only).
@@ -38,5 +39,4 @@ A lightweight record of important decisions and outstanding work. Newest first. 
 - [ ] Future: glossary page for technical terms.
 - [ ] Future: create the remaining specialist agents (Content, Website, AI Adoption Consultant, Education AI) when ready.
 - [ ] Supabase fallback period: watch the first Saturday draft and Sunday send; later decide whether to retire Neon (Sharon's approval).
-- [ ] Automated research: Stage 3 (manual step-by-step research + Use/Don't use) is live. Next: Stage 4 (Friday schedule + summary email). Stage 5 (feed Saturday) needs separate approval.
-- [ ] Verify Vercel Hobby limits (cron timing, function duration) before Stage 4; vercel.com was blocked from this environment.
+- [ ] Automated research: Stage 3 is live. Stage 4 (Friday schedule + summary email) built on the working branch: awaiting Preview test, merge approval, then switching on. Stage 5 (feed Saturday) needs separate approval.

@@ -2,7 +2,29 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { isAdmin } from "@/lib/admin-auth";
 import { getResearchSql, type ResearchFinding, type ResearchRun, type ResearchStepLog } from "@/db/research";
-import { AREAS, markAbandonedRuns, MAX_PAGES, MAX_SEARCHES, nextStep, WEEKLY_CAP_USD } from "@/lib/research";
+import {
+  AREAS,
+  markAbandonedRuns,
+  MAX_PAGES,
+  MAX_SEARCHES,
+  MONTHLY_CAP_USD,
+  nextStep,
+  researchEnvironment,
+  researchSpending,
+  researchWeekStart,
+  WEEKLY_CAP_USD,
+} from "@/lib/research";
+import {
+  canChangeSwitch,
+  FRIDAY_AREAS,
+  fridayAreaRuns,
+  fridayEnabled,
+  fridayWeek,
+  maybeSendSummary,
+  runFridayJob,
+  setFridayEnabled,
+} from "@/lib/research-schedule";
+import { PendingButton } from "@/components/pending-button";
 import { calendarDate, ukDateTime } from "@/lib/uk-time";
 import { AdminNav } from "@/components/admin-nav";
 import { ResearchRunner } from "@/components/research-runner";
@@ -39,6 +61,43 @@ async function deleteRun(formData: FormData) {
        AND (status <> 'running' OR (plan IS NOT NULL AND (step_lock_until IS NULL OR step_lock_until < now())))
      RETURNING id`;
   const msg = gone.length ? "Run deleted." : "That run can't be deleted while a step is running. Try again when it has finished.";
+  redirect(`/admin/research?msg=${encodeURIComponent(msg)}`);
+}
+
+async function fridaySwitch(formData: FormData) {
+  "use server";
+  await requireAdmin();
+  const on = formData.get("intent") === "on";
+  let msg = on ? "Friday research switched on." : "Friday research switched off.";
+  try {
+    await setFridayEnabled(on);
+  } catch (e) {
+    msg = e instanceof Error ? e.message : String(e);
+  }
+  redirect(`/admin/research?msg=${encodeURIComponent(msg)}`);
+}
+
+async function fridayTestJob() {
+  "use server";
+  await requireAdmin();
+  let msg: string;
+  try {
+    msg = `Test Friday job: ${(await runFridayJob({ job: null, test: true })).message}`;
+  } catch (e) {
+    msg = `The test job stopped: ${e instanceof Error ? e.message : String(e)}`;
+  }
+  redirect(`/admin/research?msg=${encodeURIComponent(msg.slice(0, 1500))}`);
+}
+
+async function fridaySummaryNow() {
+  "use server";
+  await requireAdmin();
+  let msg: string;
+  try {
+    msg = (await maybeSendSummary(researchWeekStart(), { force: true })) || "Nothing to send.";
+  } catch (e) {
+    msg = `The summary couldn't be sent: ${e instanceof Error ? e.message : String(e)}`;
+  }
   redirect(`/admin/research?msg=${encodeURIComponent(msg)}`);
 }
 
@@ -126,7 +185,12 @@ export default async function ResearchAdmin({ searchParams }: { searchParams: Pr
 
   let runs: ResearchRun[] = [];
   let findings: ResearchFinding[] = [];
-  let spent = 0;
+  let spend = { week: 0, month: 0, weekStart: researchWeekStart(), monthStart: "" };
+  let friday: {
+    enabled: boolean;
+    week: Awaited<ReturnType<typeof fridayWeek>>;
+    runs: Awaited<ReturnType<typeof fridayAreaRuns>> | null;
+  } = { enabled: false, week: null, runs: null };
   let error = "";
   try {
     const sql = await getResearchSql();
@@ -138,10 +202,8 @@ export default async function ResearchAdmin({ searchParams }: { searchParams: Pr
        ORDER BY CASE verification_status WHEN 'verified' THEN 0 WHEN 'partially_verified' THEN 1 ELSE 2 END,
                 created_at DESC
        LIMIT 200`) as ResearchFinding[];
-    const [row] = (await sql`
-      SELECT COALESCE(SUM(estimated_cost_usd), 0)::float AS spent FROM research_runs
-       WHERE started_at > now() - interval '7 days'`) as { spent: number }[];
-    spent = Number(row?.spent ?? 0);
+    spend = await researchSpending();
+    friday = { enabled: await fridayEnabled(), week: await fridayWeek(), runs: await fridayAreaRuns() };
   } catch (e) {
     error = e instanceof Error ? e.message : String(e);
   }
@@ -167,8 +229,10 @@ export default async function ResearchAdmin({ searchParams }: { searchParams: Pr
 
       <div className="admin-callout">
         Research runs only when you click a button below, one short step at a time. Each run covers one area, looks at the
-        last 7 days, and uses at most {MAX_SEARCHES} searches and {MAX_PAGES} page reads across all of its steps. This week: <strong>${spent.toFixed(2)}</strong> of the $
-        {WEEKLY_CAP_USD.toFixed(2)} research budget used. Nothing here feeds the Saturday newsletter yet.
+        last 7 days, and uses at most {MAX_SEARCHES} searches and {MAX_PAGES} page reads across all of its steps. Research
+        week from {calendarDate(spend.weekStart)} (Friday to Thursday): <strong>${spend.week.toFixed(2)}</strong> of $
+        {WEEKLY_CAP_USD.toFixed(2)}. This month: <strong>${spend.month.toFixed(2)}</strong> of the ${MONTHLY_CAP_USD.toFixed(2)}{" "}
+        safety limit. Both count all research, manual and Friday. Nothing here feeds the Saturday newsletter yet.
       </div>
       {msg && <p className="issue-msg" role="status">{msg}</p>}
       {error && <p className="form-error admin-error" role="alert">Couldn&apos;t load research: {error}</p>}
@@ -212,6 +276,66 @@ export default async function ResearchAdmin({ searchParams }: { searchParams: Pr
               : null
           }
         />
+      </section>
+
+      <section className="research-run-box">
+        <h2>Friday research</h2>
+        <p>
+          When switched on, six scheduled jobs run every Friday, an hour apart, from about 5am UK time (4am in winter). They
+          research all four areas in order, one short step at a time, using the same limits, and then email you a summary.
+          Findings wait here for your Use / Don&apos;t use decision; nothing goes to subscribers or the newsletter.
+        </p>
+        <p>
+          <strong>Switch ({ENV[researchEnvironment()] ?? researchEnvironment()}): {friday.enabled ? "On" : "Off"}.</strong>{" "}
+          {canChangeSwitch() ? (
+            <form action={fridaySwitch} className="inline-form">
+              <PendingButton className="text-link" name="intent" value={friday.enabled ? "off" : "on"} pendingText="Saving…">
+                {friday.enabled ? "Switch off" : "Switch on"}
+              </PendingButton>
+            </form>
+          ) : (
+            <>Preview shares the live database, so the switch can only be changed on the live site. Scheduled jobs only run on the live site.</>
+          )}
+        </p>
+        <p className="research-usage">
+          This research week (from {calendarDate(spend.weekStart)}):{" "}
+          {FRIDAY_AREAS.map((a) => {
+            const r = friday.runs?.[a];
+            return `${AREAS[a].label}: ${r ? (r.status === "running" ? "in progress" : (RUN_STATUS[r.status] ?? r.status).toLowerCase()) : "not started"}`;
+          }).join(" · ")}
+          {friday.week && (
+            <>
+              <br />
+              Jobs run: {friday.week.jobs_run}
+              {friday.week.last_job_at ? ` (last ${ukDateTime(friday.week.last_job_at)})` : ""}.{" "}
+              {friday.week.stop_reason ? `Stopped at a limit: ${friday.week.stop_note ?? friday.week.stop_reason} ` : ""}
+              Summary email:{" "}
+              {friday.week.summary_sent_at ? `sent ${ukDateTime(friday.week.summary_sent_at)}` : friday.week.summary_error ? `not sent (${friday.week.summary_error})` : "not sent yet"}.
+              {friday.week.last_job_note && (
+                <>
+                  <br />
+                  Last job: {friday.week.last_job_note}
+                </>
+              )}
+            </>
+          )}
+        </p>
+        <div className="research-buttons">
+          <form action={fridayTestJob}>
+            <PendingButton className="button button-light small research-secondary" pendingText="Running a Friday job… (up to 4 minutes)">
+              Run one Friday job now (test)
+            </PendingButton>
+          </form>
+          <form action={fridaySummaryNow}>
+            <PendingButton className="text-link" pendingText="Sending…">
+              Send this week&apos;s summary now
+            </PendingButton>
+          </form>
+        </div>
+        <p className="research-usage">
+          The test button does what one Friday job does (whatever the switch says), but stops after finishing one area, so
+          you can watch it area by area. It spends real money, within the same limits.
+        </p>
       </section>
 
       <section className="research-key">
@@ -289,6 +413,7 @@ export default async function ResearchAdmin({ searchParams }: { searchParams: Pr
                 <div className="research-meta">
                   <span className={`env-tag ${r.environment}`}>{ENV[r.environment] ?? r.environment}</span>
                   <span>{AREAS[r.area as keyof typeof AREAS]?.label ?? r.area}</span>
+                  {r.trigger === "scheduled" && <span className="decision-tag">Friday</span>}
                   <span>{ukDateTime(r.started_at)}</span>
                   <span>
                     {r.status === "running" && r.plan

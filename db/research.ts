@@ -158,7 +158,47 @@ const SCHEMA = [
   `ALTER TABLE research_runs ADD COLUMN IF NOT EXISTS fetches_used INTEGER NOT NULL DEFAULT 0`,
   `ALTER TABLE research_runs ADD COLUMN IF NOT EXISTS step_lock_id TEXT`,
   `ALTER TABLE research_runs ADD COLUMN IF NOT EXISTS step_lock_until TIMESTAMPTZ`,
+  // Stage 4: settings (the Friday on/off switch, one per environment) and one row per research week and environment,
+  // recording the Friday jobs, any limit that stopped them, and when the summary email was sent.
+  `CREATE TABLE IF NOT EXISTS research_settings (
+     key TEXT PRIMARY KEY,
+     value TEXT NOT NULL,
+     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+   )`,
+  `CREATE TABLE IF NOT EXISTS research_weeks (
+     week_start DATE NOT NULL,
+     environment TEXT NOT NULL,
+     jobs_run INTEGER NOT NULL DEFAULT 0,
+     first_job_at TIMESTAMPTZ,
+     last_job_at TIMESTAMPTZ,
+     last_job_note TEXT,
+     job_lock_id TEXT,
+     job_lock_until TIMESTAMPTZ,
+     stop_reason TEXT,
+     stop_note TEXT,
+     summary_sent_at TIMESTAMPTZ,
+     summary_error TEXT,
+     PRIMARY KEY (week_start, environment)
+   )`,
+  // Only the website's own database login uses these tables (as with the others).
+  `ALTER TABLE research_settings ENABLE ROW LEVEL SECURITY`,
+  `ALTER TABLE research_weeks ENABLE ROW LEVEL SECURITY`,
 ];
+
+export type ResearchWeek = {
+  week_start: string;
+  environment: string;
+  jobs_run: number;
+  first_job_at: string | null;
+  last_job_at: string | null;
+  last_job_note: string | null;
+  job_lock_id: string | null;
+  job_lock_until: string | null;
+  stop_reason: string | null;
+  stop_note: string | null;
+  summary_sent_at: string | null;
+  summary_error: string | null;
+};
 
 let ready: Promise<void> | null = null;
 
