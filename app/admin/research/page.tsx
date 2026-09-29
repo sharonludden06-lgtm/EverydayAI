@@ -2,7 +2,8 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { isAdmin } from "@/lib/admin-auth";
 import { getResearchSql, type ResearchFinding, type ResearchRun } from "@/db/research";
-import { AREAS, isArea, MAX_PAGES, MAX_SEARCHES, runResearch, WEEKLY_CAP_USD } from "@/lib/research";
+import { AREAS, isArea, markAbandonedRuns, MAX_PAGES, MAX_SEARCHES, runResearch, WEEKLY_CAP_USD } from "@/lib/research";
+import { calendarDate, ukDateTime } from "@/lib/uk-time";
 import { AdminNav } from "@/components/admin-nav";
 import { PendingButton } from "@/components/pending-button";
 
@@ -62,21 +63,12 @@ const RUN_STATUS: Record<string, string> = {
   partial: "Partial",
   failed: "Failed",
   stopped_limit: "Stopped at a limit",
+  interrupted: "Interrupted",
 };
 
 const ENV: Record<string, string> = { live: "Live", preview: "Preview", local: "Local test", unknown: "Unknown" };
 
 const DECISION: Record<string, string> = { use: "Marked: Use", dont_use: "Marked: Don't use", undecided: "" };
-
-const fmt = (d: string | null, time = false) =>
-  d
-    ? new Date(d).toLocaleString("en-GB", {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-        ...(time ? { hour: "2-digit", minute: "2-digit" } : {}),
-      })
-    : "—";
 
 function Detail({ label, value }: { label: string; value: string }) {
   return value ? (
@@ -96,6 +88,7 @@ export default async function ResearchAdmin({ searchParams }: { searchParams: Pr
   let error = "";
   try {
     const sql = await getResearchSql();
+    await markAbandonedRuns(); // a run the server stopped can't stay "Running"
     runs = (await sql`SELECT * FROM research_runs ORDER BY started_at DESC LIMIT 20`) as ResearchRun[];
     findings = (await sql`
       SELECT * FROM research_findings
@@ -120,7 +113,7 @@ export default async function ResearchAdmin({ searchParams }: { searchParams: Pr
         <div>
           <p className="eyebrow">Private dashboard</p>
           <h1>Research</h1>
-          <p>AI research, checked against official sources. Nothing here is published or emailed to subscribers.</p>
+          <p>AI research, checked against official sources. Nothing here is published or emailed to subscribers. Times are UK time.</p>
         </div>
         <div className="admin-summary">
           <strong>{verified}</strong>
@@ -166,7 +159,7 @@ export default async function ResearchAdmin({ searchParams }: { searchParams: Pr
                 <div className="research-meta">
                   <span className={`issue-status ${f.verification_status}`}>{STATUS[f.verification_status] ?? f.verification_status}</span>
                   <span>{AREAS[f.area as keyof typeof AREAS]?.label ?? f.area}</span>
-                  {f.event_date && <span>{fmt(f.event_date)}</span>}
+                  {f.event_date && <span>{calendarDate(f.event_date)}</span>}
                   <span>{ENV[runEnv.get(f.run_id) ?? "unknown"] ?? ""} run</span>
                   {DECISION[f.decision] && <span className="decision-tag">{DECISION[f.decision]}</span>}
                 </div>
@@ -223,8 +216,11 @@ export default async function ResearchAdmin({ searchParams }: { searchParams: Pr
                 <div className="research-meta">
                   <span className={`env-tag ${r.environment}`}>{ENV[r.environment] ?? r.environment}</span>
                   <span>{AREAS[r.area as keyof typeof AREAS]?.label ?? r.area}</span>
-                  <span>{fmt(r.started_at, true)}</span>
-                  <span>{RUN_STATUS[r.status] ?? r.status}</span>
+                  <span>{ukDateTime(r.started_at)}</span>
+                  <span>
+                    {RUN_STATUS[r.status] ?? r.status}
+                    {r.status === "running" && r.last_activity_at ? ` (last activity ${ukDateTime(r.last_activity_at).split(", ").pop()})` : ""}
+                  </span>
                   <span>
                     {r.searches_used} searches · {r.pages_opened} pages opened · ~${Number(r.estimated_cost_usd).toFixed(2)}
                   </span>

@@ -4,6 +4,7 @@ A lightweight record of important decisions and outstanding work. Newest first. 
 
 ## Decisions
 
+- **2026-09-29**: A Preview research run hit Vercel's 300-second limit (FUNCTION_INVOCATION_TIMEOUT) and stayed 'Running'. Fixed on the working branch: progress saved per reply, no retries, 240 s budget, stuck runs marked Interrupted by last activity, Interrupted/Failed runs deletable. Admin dates now shown in UK time (`Europe/London`); CSV gains a UK-time column; newsletter "Today is" uses the UK date.
 - **2026-09-29**: Research engine: after the first findings, one follow-up verification pass uses remaining allowance on open questions (official sources first), only when worthwhile; caps, window and checks unchanged. Working branch only.
 - **2026-09-29**: Stage 3 approved and built on the working branch (not in `main`): manual research per area, 8 searches / 8 pages per run, $2.50 weekly cap, 7-day window, four areas, Use/Don't use, deletable runs labelled Preview/Live. Tested locally with a stand-in API; awaiting Sharon's Preview test.
 - **2026-09-29**: Live site switched to Supabase (Stage 2.5 complete) after merging sharonludden06-lgtm/EverydayAI#1 and adding `EVERYDAY_AI_DATABASE_URL` for Production. Live sign-up and enquiry tested. Neon kept untouched as fallback.

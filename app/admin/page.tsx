@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { getSql, type Subscriber } from "@/db";
 import { endAdminSession, isAdmin } from "@/lib/admin-auth";
 import { AdminNav } from "@/components/admin-nav";
+import { ukDate } from "@/lib/uk-time";
 
 export const metadata = { title: "Newsletter subscribers", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
@@ -60,11 +61,7 @@ export default async function AdminPage() {
                   <td>{r.first_name || "—"}</td>
                   <td>{r.email}</td>
                   <td>
-                    {new Date(r.created_at).toLocaleDateString("en-GB", {
-                      day: "2-digit",
-                      month: "short",
-                      year: "numeric",
-                    })}
+                    {ukDate(r.created_at, { day: "2-digit", month: "short", year: "numeric" })}
                   </td>
                   <td>{r.source}</td>
                   <td>

@@ -4,7 +4,7 @@ import { getSql } from "@/db";
 // so a problem here can only affect /admin/research, never sign-ups or the newsletter.
 
 export type ResearchArea = "tools" | "business" | "schools" | "privacy";
-export type RunStatus = "running" | "complete" | "partial" | "failed" | "stopped_limit";
+export type RunStatus = "running" | "complete" | "partial" | "failed" | "stopped_limit" | "interrupted";
 export type VerificationStatus = "verified" | "partially_verified" | "unverified";
 export type FindingDecision = "undecided" | "use" | "dont_use";
 
@@ -27,6 +27,7 @@ export type ResearchRun = {
   model: string;
   started_at: string;
   finished_at: string | null;
+  last_activity_at: string | null;
   searches_used: number;
   pages_opened: number;
   input_tokens: number;
@@ -108,6 +109,8 @@ const SCHEMA = [
   `CREATE INDEX IF NOT EXISTS research_findings_run_idx ON research_findings (run_id)`,
   // Stage 3: label each run with where it ran, so Preview test runs are easy to spot and delete.
   `ALTER TABLE research_runs ADD COLUMN IF NOT EXISTS environment TEXT NOT NULL DEFAULT 'unknown'`,
+  // Updated after every reply from Anthropic; used to spot runs the server abandoned.
+  `ALTER TABLE research_runs ADD COLUMN IF NOT EXISTS last_activity_at TIMESTAMPTZ`,
 ];
 
 let ready: Promise<void> | null = null;
