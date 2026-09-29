@@ -4,6 +4,7 @@ A lightweight record of important decisions and outstanding work. Newest first. 
 
 ## Decisions
 
+- **2026-09-29**: A single long research request never returned (third Preview run failed). Replaced, on the working branch, with bounded resumable steps (search step, then one step per candidate), run-wide 8/8 limits and $2.50 weekly cap, step lock, no repeats of finished or cut-off steps. Tested locally with a stand-in API; awaiting one real Preview test (AI tools & features only).
 - **2026-09-29**: A Preview research run hit Vercel's 300-second limit (FUNCTION_INVOCATION_TIMEOUT) and stayed 'Running'. Fixed on the working branch: progress saved per reply, no retries, 240 s budget, stuck runs marked Interrupted by last activity, Interrupted/Failed runs deletable. Admin dates now shown in UK time (`Europe/London`); CSV gains a UK-time column; newsletter "Today is" uses the UK date.
 - **2026-09-29**: Research engine: after the first findings, one follow-up verification pass uses remaining allowance on open questions (official sources first), only when worthwhile; caps, window and checks unchanged. Working branch only.
 - **2026-09-29**: Stage 3 approved and built on the working branch (not in `main`): manual research per area, 8 searches / 8 pages per run, $2.50 weekly cap, 7-day window, four areas, Use/Don't use, deletable runs labelled Preview/Live. Tested locally with a stand-in API; awaiting Sharon's Preview test.
@@ -35,5 +36,5 @@ A lightweight record of important decisions and outstanding work. Newest first. 
 - [ ] Future: glossary page for technical terms.
 - [ ] Future: create the remaining specialist agents (Content, Website, AI Adoption Consultant, Education AI) when ready.
 - [ ] Supabase fallback period: watch the first Saturday draft and Sunday send; later decide whether to retire Neon (Sharon's approval).
-- [ ] Automated research: Stage 3 built on the working branch, awaiting Preview test and merge approval; Stage 3 (manual "research now" + Use/Don't use), Stage 4 (Friday schedule + summary email). Stage 5 (feed Saturday) needs separate approval.
+- [ ] Automated research: Stage 3 (now step-by-step) built on the working branch, awaiting one real Preview test and merge approval; Stage 3 (manual "research now" + Use/Don't use), Stage 4 (Friday schedule + summary email). Stage 5 (feed Saturday) needs separate approval.
 - [ ] Verify Vercel Hobby limits (cron timing, function duration) before Stage 4; vercel.com was blocked from this environment.

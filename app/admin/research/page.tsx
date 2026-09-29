@@ -1,11 +1,11 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { isAdmin } from "@/lib/admin-auth";
-import { getResearchSql, type ResearchFinding, type ResearchRun } from "@/db/research";
-import { AREAS, isArea, markAbandonedRuns, MAX_PAGES, MAX_SEARCHES, runResearch, WEEKLY_CAP_USD } from "@/lib/research";
+import { getResearchSql, type ResearchFinding, type ResearchRun, type ResearchStepLog } from "@/db/research";
+import { AREAS, markAbandonedRuns, MAX_PAGES, MAX_SEARCHES, nextStep, WEEKLY_CAP_USD } from "@/lib/research";
 import { calendarDate, ukDateTime } from "@/lib/uk-time";
 import { AdminNav } from "@/components/admin-nav";
-import { PendingButton } from "@/components/pending-button";
+import { ResearchRunner } from "@/components/research-runner";
 
 export const metadata = { title: "Research", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
@@ -13,21 +13,6 @@ export const maxDuration = 300;
 
 async function requireAdmin() {
   if (!(await isAdmin())) redirect("/admin/login");
-}
-
-async function research(formData: FormData) {
-  "use server";
-  await requireAdmin();
-  const area = String(formData.get("intent") ?? "");
-  let msg = "Unknown research area.";
-  if (isArea(area)) {
-    try {
-      msg = (await runResearch(area)).message;
-    } catch (e) {
-      msg = `Research couldn't start: ${e instanceof Error ? e.message : String(e)}`;
-    }
-  }
-  redirect(`/admin/research?msg=${encodeURIComponent(msg)}`);
 }
 
 async function decide(formData: FormData) {
@@ -47,8 +32,14 @@ async function deleteRun(formData: FormData) {
   await requireAdmin();
   const id = Number(formData.get("id"));
   const sql = await getResearchSql();
-  await sql`DELETE FROM research_runs WHERE id = ${id} AND status <> 'running'`; // findings go with it
-  redirect(`/admin/research?msg=${encodeURIComponent("Run deleted.")}`);
+  // Findings go with it. A run can't be deleted while one of its steps is actually running.
+  const gone = await sql`
+    DELETE FROM research_runs
+     WHERE id = ${id}
+       AND (status <> 'running' OR (plan IS NOT NULL AND (step_lock_until IS NULL OR step_lock_until < now())))
+     RETURNING id`;
+  const msg = gone.length ? "Run deleted." : "That run can't be deleted while a step is running. Try again when it has finished.";
+  redirect(`/admin/research?msg=${encodeURIComponent(msg)}`);
 }
 
 const STATUS: Record<string, string> = {
@@ -69,6 +60,57 @@ const RUN_STATUS: Record<string, string> = {
 const ENV: Record<string, string> = { live: "Live", preview: "Preview", local: "Local test", unknown: "Unknown" };
 
 const DECISION: Record<string, string> = { use: "Marked: Use", dont_use: "Marked: Don't use", undecided: "" };
+
+const OUTCOME: Record<ResearchStepLog["outcome"], string> = {
+  running: "Running",
+  done: "Done",
+  failed: "Failed",
+  cut_off: "Cut off",
+  dropped: "Left out",
+};
+
+const timeOnly = (d: string) => ukDateTime(d).split(", ").pop();
+
+function StepTable({ steps }: { steps: ResearchStepLog[] }) {
+  if (!steps.length) return null;
+  return (
+    <div className="research-steps-wrap">
+      <table className="research-steps">
+        <thead>
+          <tr>
+            <th>Step</th>
+            <th>What</th>
+            <th>Started</th>
+            <th>Took</th>
+            <th>Searches</th>
+            <th>Pages opened / tried</th>
+            <th>Cost</th>
+            <th>Result</th>
+          </tr>
+        </thead>
+        <tbody>
+          {steps.map((s) => (
+            <tr key={s.n}>
+              <td>{s.n}</td>
+              <td>{s.label}</td>
+              <td>{timeOnly(s.started_at)}</td>
+              <td>{s.finished_at ? `${Math.round((new Date(s.finished_at).getTime() - new Date(s.started_at).getTime()) / 1000)}s` : "—"}</td>
+              <td>{s.searches}</td>
+              <td>{s.pages} / {s.fetches}</td>
+              <td>~${Number(s.cost).toFixed(3)}</td>
+              <td>
+                <span className={`outcome-${s.outcome}`}>{OUTCOME[s.outcome] ?? s.outcome}</span>
+                {s.note ? ` ${s.note}` : ""}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+const locked = (r: ResearchRun) => !!r.step_lock_until && new Date(r.step_lock_until).getTime() > Date.now();
 
 function Detail({ label, value }: { label: string; value: string }) {
   return value ? (
@@ -103,6 +145,8 @@ export default async function ResearchAdmin({ searchParams }: { searchParams: Pr
   } catch (e) {
     error = e instanceof Error ? e.message : String(e);
   }
+  const active = runs.find((r) => r.status === "running" && r.plan) ?? null;
+  const areaList = (Object.keys(AREAS) as (keyof typeof AREAS)[]).map((key) => ({ key, label: AREAS[key].label }));
   const verified = findings.filter((f) => f.verification_status === "verified").length;
   const runEnv = new Map(runs.map((r) => [r.id, r.environment]));
 
@@ -122,8 +166,8 @@ export default async function ResearchAdmin({ searchParams }: { searchParams: Pr
       </div>
 
       <div className="admin-callout">
-        Research runs only when you click a button below. Each run covers one area, looks at the last 7 days, and uses at
-        most {MAX_SEARCHES} searches and {MAX_PAGES} page reads. This week: <strong>${spent.toFixed(2)}</strong> of the $
+        Research runs only when you click a button below, one short step at a time. Each run covers one area, looks at the
+        last 7 days, and uses at most {MAX_SEARCHES} searches and {MAX_PAGES} page reads across all of its steps. This week: <strong>${spent.toFixed(2)}</strong> of the $
         {WEEKLY_CAP_USD.toFixed(2)} research budget used. Nothing here feeds the Saturday newsletter yet.
       </div>
       {msg && <p className="issue-msg" role="status">{msg}</p>}
@@ -131,14 +175,43 @@ export default async function ResearchAdmin({ searchParams }: { searchParams: Pr
 
       <section className="research-run-box">
         <h2>Research now</h2>
-        <p>Takes up to about four minutes. Please keep this page open until it finishes.</p>
-        <form action={research} className="research-buttons">
-          {(Object.keys(AREAS) as (keyof typeof AREAS)[]).map((area) => (
-            <PendingButton key={area} className="button button-primary small" name="intent" value={area} pendingText="Researching…">
-              {AREAS[area].label}
-            </PendingButton>
-          ))}
-        </form>
+        {active?.plan && (
+          <>
+            <h3>
+              {AREAS[active.area]?.label ?? active.area} <span className={`env-tag ${active.environment}`}>{ENV[active.environment] ?? active.environment}</span>
+            </h3>
+            <p className="research-usage">
+              Started {ukDateTime(active.started_at)}. Used so far: {active.searches_used} of {MAX_SEARCHES} searches ·{" "}
+              {active.fetches_used} of {MAX_PAGES} page reads ({active.pages_opened} opened) · ~$
+              {Number(active.estimated_cost_usd).toFixed(2)}. Each step is saved as soon as it finishes.
+            </p>
+            <StepTable steps={active.plan.steps} />
+            {active.plan.candidates.length > 0 && (
+              <p className="research-usage">
+                Candidates:{" "}
+                {active.plan.candidates
+                  .map((c) => `“${c.title}” (${{ pending: "to check", in_progress: "checking", done: "saved", failed: "failed", cut_off: "cut off", skipped: "skipped", dropped: "left out" }[c.status]})`)
+                  .join(" · ")}
+              </p>
+            )}
+          </>
+        )}
+        {/* Always in the same place, so its latest message stays visible when a run finishes. */}
+        <ResearchRunner
+          areas={areaList}
+          active={
+            active?.plan
+              ? {
+                  id: active.id,
+                  areaLabel: AREAS[active.area]?.label ?? active.area,
+                  nextLabel: nextStep(active.plan).label,
+                  stepNumber: active.plan.steps.length + 1,
+                  busy: locked(active),
+                  busyUntil: active.step_lock_until ? (timeOnly(active.step_lock_until) ?? "") : "",
+                }
+              : null
+          }
+        />
       </section>
 
       <section className="research-key">
@@ -218,16 +291,26 @@ export default async function ResearchAdmin({ searchParams }: { searchParams: Pr
                   <span>{AREAS[r.area as keyof typeof AREAS]?.label ?? r.area}</span>
                   <span>{ukDateTime(r.started_at)}</span>
                   <span>
-                    {RUN_STATUS[r.status] ?? r.status}
-                    {r.status === "running" && r.last_activity_at ? ` (last activity ${ukDateTime(r.last_activity_at).split(", ").pop()})` : ""}
+                    {r.status === "running" && r.plan
+                      ? locked(r)
+                        ? "Step in progress…"
+                        : "Paused: waiting for Continue"
+                      : RUN_STATUS[r.status] ?? r.status}
+                    {r.status === "running" && r.last_activity_at ? ` (last activity ${timeOnly(r.last_activity_at)})` : ""}
                   </span>
                   <span>
-                    {r.searches_used} searches · {r.pages_opened} pages opened · ~${Number(r.estimated_cost_usd).toFixed(2)}
+                    {r.searches_used} searches · {r.pages_opened} pages opened{r.plan ? ` (${r.fetches_used} tried)` : ""} · ~${Number(r.estimated_cost_usd).toFixed(2)}
                   </span>
                 </div>
                 {r.unchecked_notes && <p className="research-note">Still unchecked: {r.unchecked_notes}</p>}
                 {r.error && <p className="research-note">Problem: {r.error}</p>}
-                {r.status !== "running" && (
+                {r.plan && r.plan.steps.length > 0 && r.id !== active?.id && (
+                  <details>
+                    <summary>Steps ({r.plan.steps.length})</summary>
+                    <StepTable steps={r.plan.steps} />
+                  </details>
+                )}
+                {(r.status !== "running" || (r.plan && !locked(r))) && (
                   <form action={deleteRun}>
                     <input type="hidden" name="id" value={r.id} />
                     <button className="text-link danger" type="submit">Delete this run and its findings</button>
