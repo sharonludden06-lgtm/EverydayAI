@@ -566,6 +566,13 @@ async function converse(opts: {
       if (error instanceof Anthropic.APIConnectionTimeoutError) {
         throw new Error("The request to Anthropic took too long and was stopped to stay within the time limit. It wasn't repeated. Its cost isn't included here; check the Anthropic Console for the exact figure.");
       }
+      // Anthropic's service answered that it was unavailable or overloaded, so the request wasn't carried out.
+      if (error instanceof Anthropic.APIError && [500, 502, 503, 504, 529].includes(error.status as number)) {
+        const ref = error.requestID ? ` Anthropic's reference for this request: ${error.requestID}.` : "";
+        throw new Error(
+          `Anthropic's service was temporarily unavailable (error ${error.status}) and didn't carry out this request, so nothing was searched or read. It wasn't repeated.${ref}`,
+        );
+      }
       throw error;
     }
 

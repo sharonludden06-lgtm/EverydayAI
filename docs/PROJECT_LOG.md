@@ -4,6 +4,7 @@ A lightweight record of important decisions and outstanding work. Newest first. 
 
 ## Decisions
 
+- **2026-09-29**: First Preview Friday test failed at step 1 with "503 status code (no body)": Anthropic's service refused the request (temporarily unavailable) before doing any work; one request, no retry, $0.00 recorded. Reproduced locally. Clearer message added (with Anthropic's request reference when given). Whether to let the next Friday job try a step again after such a refusal is awaiting Sharon's decision.
 - **2026-09-29**: Stage 4 approved and built on the working branch (not in `main`): six Friday Vercel cron jobs (Sharon confirmed from Vercel's official docs, updated 15 July 2026, that Hobby allows 100 cron jobs, once a day each, ±59 min), all four areas, summary email to the admin address, on/off switch off by default, $2.50 Friday–Thursday research-week limit plus a new $8.00 calendar-month safety limit ($10 Anthropic limit as backstop). Tested locally with stand-in services; Preview test next.
 - **2026-09-29**: Step-by-step research and UK admin times are live: merged sharonludden06-lgtm/EverydayAI#2; the Production deployment was Ready, and Sharon checked the public site and the Subscribers, Newsletter and Research admin pages; all correct. No live research run yet.
 - **2026-09-29**: Real Preview test of step-by-step research (AI tools & features, run 4) passed, and a read-only Supabase integrity check passed on all eight points: 5 steps, 4 findings, 5 searches / 5 page reads, ~$0.44. Awaiting Sharon's approval to merge to `main`.
