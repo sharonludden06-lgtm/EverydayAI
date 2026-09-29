@@ -442,6 +442,21 @@ function outcome(plan: ResearchPlan): { status: RunStatus; notes: string; error:
 // ---------------------------------------------------------------------------------------------------------
 // Saving: every change to a run goes through one short transaction that first checks this request still holds the lock
 
+/**
+ * Anthropic answered that it was temporarily unavailable (503) or overloaded (529). `beforeAnyWork` is true only when
+ * this was the step's first request, so nothing in the step had been carried out or charged yet.
+ */
+class AnthropicRefused extends Error {
+  constructor(message: string, readonly status: number, readonly beforeAnyWork: boolean) {
+    super(message);
+  }
+}
+
+// Friday research only: a step Anthropic refused as unavailable/overloaded before any work is left unfinished for the
+// next Friday job, at most this many attempts in all. Never tried again within the same job.
+export const MAX_REFUSED_ATTEMPTS = 2;
+const RETRY_LATER_STATUSES = [503, 529];
+
 class LostLock extends Error {
   constructor() {
     super("This step's lock was taken over by another request, so its results were not saved twice.");
@@ -569,9 +584,9 @@ async function converse(opts: {
       // Anthropic's service answered that it was unavailable or overloaded, so the request wasn't carried out.
       if (error instanceof Anthropic.APIError && [500, 502, 503, 504, 529].includes(error.status as number)) {
         const ref = error.requestID ? ` Anthropic's reference for this request: ${error.requestID}.` : "";
-        throw new Error(
-          `Anthropic's service was temporarily unavailable (error ${error.status}) and didn't carry out this request, so nothing was searched or read. It wasn't repeated.${ref}`,
-        );
+        const message = `Anthropic's service was temporarily unavailable (error ${error.status}) and didn't carry out this request, so nothing was searched or read. It wasn't repeated.${ref}`;
+        if (RETRY_LATER_STATUSES.includes(error.status as number)) throw new AnthropicRefused(message, error.status as number, i === 0);
+        throw new Error(message);
       }
       throw error;
     }
@@ -660,8 +675,8 @@ export async function startResearchRun(
  */
 export async function advanceResearchRun(
   runId: number,
-  opts: { deadline?: number } = {},
-): Promise<{ message: string; finished: boolean; noTime?: boolean; busy?: boolean; limit?: LimitReason }> {
+  opts: { deadline?: number; retryLater?: boolean } = {},
+): Promise<{ message: string; finished: boolean; noTime?: boolean; busy?: boolean; postponed?: boolean; limit?: LimitReason }> {
   // Inside a scheduled job, a step only starts if it can finish well within the job's time.
   const budgetMs = opts.deadline ? Math.min(STEP_BUDGET_MS, opts.deadline - Date.now() - JOB_MARGIN_MS) : STEP_BUDGET_MS;
   if (budgetMs < MIN_STEP_TIME_MS - JOB_MARGIN_MS) return { message: "Not enough time left in this job to start another step.", finished: false, noTime: true };
@@ -790,15 +805,36 @@ export async function advanceResearchRun(
       }
     } catch (error) {
       if (error instanceof LostLock) throw error;
-      const message = error instanceof Error ? error.message : String(error);
+      // Friday research only: Anthropic refused this step's first request as unavailable/overloaded, so nothing was
+      // carried out or charged. Leave the step unfinished for the next Friday job (at most MAX_REFUSED_ATTEMPTS in all).
+      if (opts.retryLater && error instanceof AnthropicRefused && error.beforeAnyWork) {
+        const before = step.kind === "discovery" ? (plan.discovery.refusals ?? 0) : (plan.candidates[step.index].refusals ?? 0);
+        if (before + 1 < MAX_REFUSED_ATTEMPTS) {
+          const note = `${error.message.replace(" It wasn't repeated.", "")} The next Friday job will try this step once more.`;
+          await save(runId, lock, (p) => {
+            closeLog(p, "refused", note);
+            if (step.kind === "discovery") p.discovery = { status: "pending", note: "", refusals: before + 1 };
+            else Object.assign(p.candidates[step.index], { status: "pending", refusals: before + 1 });
+            return { release: true };
+          });
+          released = true;
+          return { message: `Step ${log.n}: ${note}`, finished: false, postponed: true };
+        }
+      }
+      const refusedTwice = error instanceof AnthropicRefused && error.beforeAnyWork && opts.retryLater;
+      const message =
+        refusedTwice
+          ? `${(error as Error).message.replace(" It wasn't repeated.", "")} This was attempt ${MAX_REFUSED_ATTEMPTS} of ${MAX_REFUSED_ATTEMPTS}, so the step is marked Failed and won't be tried again.`
+          : error instanceof Error ? error.message : String(error);
       const limit = /usage limits|spend limit|credit balance/i.test(message);
       const note = limit ? "The Anthropic research spend limit has been reached." : message.slice(0, 500);
       // The step failed: record it (not repeated), and carry on unless nothing more can be done.
       const finish = limit || step.kind === "discovery";
       await save(runId, lock, (p) => {
         closeLog(p, "failed", note);
-        if (step.kind === "discovery") p.discovery = { status: "failed", note };
-        else Object.assign(p.candidates[step.index], { status: "failed", note });
+        const refusals = error instanceof AnthropicRefused ? 1 : 0;
+        if (step.kind === "discovery") p.discovery = { status: "failed", note, refusals: (p.discovery.refusals ?? 0) + refusals };
+        else Object.assign(p.candidates[step.index], { status: "failed", note, refusals: (p.candidates[step.index].refusals ?? 0) + refusals });
         if (limit) {
           p.stop_reason = "spend_limit";
           for (const c of p.candidates) if (c.status === "pending") { c.status = "skipped"; c.note = "Not checked: the spend limit was reached."; }

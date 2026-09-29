@@ -53,6 +53,7 @@ export type ResearchCandidate = {
   status: StepStatus;
   note: string;
   finding_id: number | null;
+  refusals?: number; // times Anthropic refused this step as temporarily unavailable (Friday research only)
 };
 
 export type ResearchStepLog = {
@@ -65,14 +66,14 @@ export type ResearchStepLog = {
   fetches: number; // page-read attempts (these count towards the limit)
   pages: number; // pages actually opened
   cost: number;
-  outcome: "running" | "done" | "failed" | "cut_off" | "dropped";
+  outcome: "running" | "done" | "failed" | "cut_off" | "dropped" | "refused"; // refused: Anthropic unavailable, tried again later
   note: string;
 };
 
 /** Everything a step-by-step run needs to carry on from where it stopped. Saved in research_runs.plan. */
 export type ResearchPlan = {
   version: 1;
-  discovery: { status: StepStatus; note: string };
+  discovery: { status: StepStatus; note: string; refusals?: number };
   candidates: ResearchCandidate[];
   unchecked: string;
   stop_reason: string;

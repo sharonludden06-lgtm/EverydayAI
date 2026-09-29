@@ -126,6 +126,7 @@ const OUTCOME: Record<ResearchStepLog["outcome"], string> = {
   failed: "Failed",
   cut_off: "Cut off",
   dropped: "Left out",
+  refused: "Anthropic unavailable",
 };
 
 const timeOnly = (d: string) => ukDateTime(d).split(", ").pop();

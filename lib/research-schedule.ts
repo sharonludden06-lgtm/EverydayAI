@@ -174,13 +174,15 @@ async function work(week: string, deadline: number, test: boolean, log: string[]
         continue;
       }
       const label = AREAS[open.area]?.label ?? open.area;
-      const result = await advanceResearchRun(open.id, { deadline });
+      // Only runs this Friday research started get the "try again next job" protection.
+      const result = await advanceResearchRun(open.id, { deadline, retryLater: true });
       log.push(`${label}: ${result.message}`);
       if (result.limit) {
         await stopWeek(week, result.limit, result.message);
         return;
       }
       if (result.noTime || result.busy) return;
+      if (result.postponed) return; // never tried again within the same job
       if (result.finished && test) return; // the test button does one area at a time
       continue;
     }
@@ -289,6 +291,9 @@ async function buildSummary(week: string, runs: Record<ResearchArea, ResearchRun
     const notChecked = (run.plan?.candidates ?? []).filter((c) => ["failed", "cut_off", "skipped", "pending", "in_progress"].includes(c.status));
     for (const c of notChecked) lines.push(`Not checked: ${c.title}${c.note ? ` (${c.note.replace(/^Not checked: /, "")})` : ""}`);
     if (run.error) lines.push(`Problem: ${run.error}`);
+    if (run.status === "running") {
+      lines.push("Not finished: press Continue on the Research page to carry on (unfinished runs close automatically after 24 hours).");
+    }
     return { heading: label, lines };
   });
 
