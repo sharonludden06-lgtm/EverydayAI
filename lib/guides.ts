@@ -1,7 +1,7 @@
 import "server-only";
 import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
-import { Marked } from "marked";
+import { Marked, type Tokens } from "marked";
 
 /**
  * Everyday AI guides: one Markdown file per guide in content/guides/.
@@ -198,10 +198,18 @@ const CALLOUTS: Record<string, string> = {
 const decode = (s: string) =>
   s.replace(/&#(\d+);/g, (_, n) => String.fromCharCode(Number(n))).replace(/&quot;/g, '"').replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&");
 
-export type GuideHeading = { id: string; text: string };
+/** `label` is set for headings such as "Step 1: …" or "Prompt 2: …", which show that label instead of a section number. */
+export type GuideHeading = { id: string; text: string; label?: string };
 
 const slugify = (text: string) =>
   text.toLowerCase().replace(/[*_`[\]()]/g, "").replace(/&[a-z]+;/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "section";
+
+// A list item that opens with a bold phrase ending in punctuation ("**Crop or cover anything personal.** …").
+function hasLead(item: Tokens.ListItem) {
+  const first = item.tokens.find((t) => t.type !== "checkbox");
+  const opening = first && "tokens" in first ? first.tokens?.[0] : undefined;
+  return opening?.type === "strong" && /[.:?!]\W*$/.test(opening.text);
+}
 
 /** Markdown → HTML plus the list of sections. As in the newsletter, raw HTML in a guide is shown as
  * text rather than run, and only ordinary web, email and on-site links are allowed. */
@@ -226,7 +234,13 @@ export function renderGuide(body: string): { html: string; headings: GuideHeadin
         if (depth > 2) return `<h3>${inner}</h3>\n`;
         let id = slugify(text);
         while (headings.some((h) => h.id === id)) id += "-2";
-        headings.push({ id, text: decode(inner.replace(/<[^>]+>/g, "")) });
+        const plain = decode(inner.replace(/<[^>]+>/g, ""));
+        const labelled = plain.match(/^((?:Step|Prompt|Part)\s+\d+)\s*[:.]\s+(.+)$/i);
+        if (labelled) {
+          headings.push({ id, text: labelled[2], label: labelled[1] });
+          return `<h2 id="${id}" class="labelled"><span class="guide-h2-label">${esc(labelled[1])}</span>${esc(labelled[2])}</h2>\n`;
+        }
+        headings.push({ id, text: plain });
         return `<h2 id="${id}">${inner}</h2>\n`;
       },
       blockquote({ tokens, text }) {
@@ -244,14 +258,13 @@ export function renderGuide(body: string): { html: string; headings: GuideHeadin
       },
       list(token) {
         const tag = token.ordered ? "ol" : "ul";
-        const cls = token.ordered ? "guide-steps" : token.items.some((i) => i.task) ? "guide-checks" : "guide-list";
+        const cls = token.ordered ? "guide-steps" : token.items.some((i) => i.task) ? "guide-checks" : token.items.some(hasLead) ? "guide-list rows" : "guide-list";
         const start = token.ordered && token.start !== 1 && token.start !== "" ? ` start="${token.start}"` : "";
         return `<${tag} class="${cls}"${start}>\n${token.items.map((i) => this.listitem(i)).join("")}</${tag}>\n`;
       },
       listitem(item) {
-        // An item that opens with bold text ("**Crop or cover anything personal.** …") shows that bold part as its heading.
-        const first = item.tokens.find((t) => t.type !== "checkbox");
-        const lead = first && "tokens" in first && first.tokens?.[0]?.type === "strong";
+        // An item that opens with a bold phrase ending in punctuation ("**Crop or cover anything personal.** …") shows that phrase as its heading.
+        const lead = hasLead(item);
         return `<li${lead ? ' class="has-lead"' : ""}>${this.parser.parse(item.tokens)}</li>\n`;
       },
       checkbox: () => "",

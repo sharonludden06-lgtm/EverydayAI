@@ -32,7 +32,10 @@ export default async function GuidePage({ params }: Props) {
   if (!guide) notFound();
   const { html, headings } = renderGuide(guide.body);
   const Icon = icons[guide.icon];
-  const contents = headings.length > 1 && <ol>{headings.map((h, i) => <li key={h.id}><a href={`#${h.id}`}><span>{String(i + 1).padStart(2, "0")}</span>{h.text}</a></li>)}</ol>;
+  // Sections are numbered 01, 02…; "Step 1: …" and "Prompt 1: …" sections show their own label instead.
+  let n = 0;
+  const numbered = headings.map((h) => ({ ...h, mark: h.label ?? String(++n).padStart(2, "0") }));
+  const contents = headings.length > 1 && <ol>{numbered.map((h) => <li key={h.id}><a href={`#${h.id}`}><span>{h.mark}</span>{h.text}</a></li>)}</ol>;
 
   return <main className="guide-page">
     {guide.status !== "published" && <div className="guide-banner shell" role="note"><strong>Not public yet.</strong> This guide is {guide.status === "draft" ? "a draft" : "marked “coming soon”"}. You can see it because this is a Preview version of the site; it won&apos;t appear on the live site until it&apos;s approved and published.</div>}

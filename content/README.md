@@ -58,6 +58,7 @@ Nothing becomes public automatically. A guide is only public once a person sets 
 
 - Follow the voice, plain-English and fact-checking rules in `/CLAUDE.md`.
 - Start sections with `##` (the page title is added automatically). Each `##` section is numbered and listed in "In this guide". Use `###` for smaller headings inside a section.
+- For a sequence of sections, start the heading with `Step 1:`, `Prompt 1:` or `Part 1:` (e.g. `## Step 1: Write down your week`). That label is shown instead of the section number, and the other sections carry on 01, 02…
 - The first paragraph is shown larger, as an introduction. Keep paragraphs short.
 
 ## Building blocks
@@ -76,7 +77,7 @@ Every guide page uses the same design. These are written in ordinary Markdown, s
 | A numbered list (`1.`, `2.` …) | **Numbered steps**. |
 | A task list (`- [x] item`) | A **tick list**, e.g. "What you'll need". |
 | A bulleted list (`- item`) | Blue-dot bullets. |
-| A list item starting with bold text (`- **Check the settings.** Most AI…`) | The bold part becomes the item's heading, for quick scanning. |
+| A list item starting with a bold phrase that ends in punctuation (`- **Check the settings.** Most AI…`) | The bold phrase becomes the item's heading, and the list is shown as divided rows for quick scanning. |
 
 Any panel takes an optional heading after the marker (`> [!tip] Save your prompt`); without one it uses the default label. Leave a line with just `>` after the marker line, then the content, for example:
 
