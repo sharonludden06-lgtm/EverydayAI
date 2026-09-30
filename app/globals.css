@@ -228,7 +228,17 @@
 /* Resources: guides not written yet, and a filter with no guides yet */
 .resource-meta .resource-soon{font:italic 15px Georgia,serif;color:var(--blue)}
 .resource-meta a{color:var(--blue)}
-.resource-meta a.resource-preview{font:italic 15px Georgia,serif;text-decoration:underline;text-underline-offset:3px}
+.resource-meta{align-items:center;gap:12px}
+.resource-read{font-size:14px;font-weight:700}
+.resource-card.is-linked{position:relative;transition:transform .3s,box-shadow .3s,border-color .3s}
+.resource-card.is-linked .resource-read:after{content:"";position:absolute;inset:0}
+.resource-card.is-linked:hover{transform:translateY(-4px);box-shadow:0 24px 60px rgba(10,34,70,.1);border-color:#b8c2cf}
+.resource-card.is-linked:hover .resource-read{text-decoration:underline;text-underline-offset:4px}
+.resource-card.is-linked:focus-within{outline:2px solid var(--blue);outline-offset:3px}
+.resource-card.is-linked .resource-read:focus-visible{outline:none}
+.resource-cta{display:inline-flex;align-items:center;flex-wrap:wrap;justify-content:flex-end;gap:10px}
+.resource-meta a.resource-preview-tag{font-size:11px;font-weight:700;letter-spacing:.04em;background:#fff1cc;color:#6b4e00;border:1px dashed #d9b44a;border-radius:99px;padding:5px 10px}
+.resource-meta a.resource-preview-tag:hover{background:#ffe7a8}
 .resource-empty{border:1px solid var(--line);background:#eaf1ff;padding:56px 34px;min-height:390px;display:flex;flex-direction:column;justify-content:center;align-items:flex-start}
 .resource-empty h2{font-size:42px;margin:0 0 16px}
 .resource-empty p{color:#3f4b58;line-height:1.7;max-width:520px;margin-bottom:8px}
