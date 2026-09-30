@@ -4,6 +4,7 @@ A lightweight record of important decisions and outstanding work. Newest first. 
 
 ## Decisions
 
+- **2026-09-30**: Stage 5 (guide publishing system) approved and started on the working branch: one Markdown file per guide in `content/guides/` builds its Resources card, filter placement and `/resources/<slug>` page. Statuses draft / coming-soon / published; the four existing cards stay "Guide coming soon" (option b); optional `checked` date; home tips link to a guide only once it's published; Resources stays highlighted on guide pages. Claude drafts the four guides for Sharon's review; nothing published or merged without her approval.
 - **2026-09-30**: Sharon switched Friday research on for the live site. First live run: Friday 2 October (about 5am–11am UK time); summary email and a read-only database check to follow.
 - **2026-09-30**: Resources fix is live (sharonludden06-lgtm/EverydayAI#4): Production deployment Ready, and Sharon confirmed the live Resources page is correct. Stage 4 was merged earlier (sharonludden06-lgtm/EverydayAI#3), with Friday research still switched off.
 - **2026-09-30**: Resources filters found not to work (placeholder since the site's first version, not caused by Stage 4). Built on the working branch: real filter buttons (Home & family, Work, Prompts, Tools), a "Tools are coming" message linking to the existing sign-up, and "Guide coming soon" instead of dead "Open guide" links. Cards still hard-coded. Awaiting Preview check.
