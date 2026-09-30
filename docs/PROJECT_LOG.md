@@ -4,6 +4,7 @@ A lightweight record of important decisions and outstanding work. Newest first. 
 
 ## Decisions
 
+- **2026-09-30**: Resources filters found not to work (placeholder since the site's first version, not caused by Stage 4). Built on the working branch: real filter buttons (Home & family, Work, Prompts, Tools), a "Tools are coming" message linking to the existing sign-up, and "Guide coming soon" instead of dead "Open guide" links. Cards still hard-coded. Awaiting Preview check.
 - **2026-09-29**: Approved and built: Friday "try again later" protection. Only a 503/529 refusal of a step's first request is left for the next Friday job (max 2 attempts, never in the same job); timeouts, cut-offs and other errors still aren't retried; manual research unchanged. Tested locally (8 scenarios).
 - **2026-09-29**: First Preview Friday test failed at step 1 with "503 status code (no body)": Anthropic's service refused the request (temporarily unavailable) before doing any work; one request, no retry, $0.00 recorded. Reproduced locally. Clearer message added (with Anthropic's request reference when given). Whether to let the next Friday job try a step again after such a refusal is awaiting Sharon's decision.
 - **2026-09-29**: Stage 4 approved and built on the working branch (not in `main`): six Friday Vercel cron jobs (Sharon confirmed from Vercel's official docs, updated 15 July 2026, that Hobby allows 100 cron jobs, once a day each, ±59 min), all four areas, summary email to the admin address, on/off switch off by default, $2.50 Friday–Thursday research-week limit plus a new $8.00 calendar-month safety limit ($10 Anthropic limit as backstop). Tested locally with stand-in services; Preview test next.
@@ -34,8 +35,7 @@ A lightweight record of important decisions and outstanding work. Newest first. 
 
 ## Outstanding work
 
-- [ ] Resources page: "Open guide" links point to `#`; real guide pages are needed.
-- [ ] Resources page: the filter chips (Home & family, Work, …) don't filter yet.
+- [ ] Resources page: real guide pages are needed (cards show "Guide coming soon" for now). Recommended later: one Markdown file per guide in the repo, generating its page and card automatically.
 - [ ] Newsletter is in rehearsal mode; going live needs the domain verified in Resend, then `NEWSLETTER_FROM` and `SENDING_ENABLED=true` set in Vercel (Sharon to do, or approve).
 - [ ] No automated checks (tests/linting) yet; consider adding a simple type-check.
 - [ ] Future: glossary page for technical terms.
