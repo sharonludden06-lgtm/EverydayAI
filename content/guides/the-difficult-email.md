@@ -41,15 +41,19 @@ Here's the formula as a message (often called a "prompt") you can paste straight
 >
 > Please give me two versions: one slightly softer and one slightly firmer.
 
-Asking for two versions is a small trick that works well. Seeing the softer and firmer options side by side makes it much easier to judge where you want to land.
+> [!tip] Ask for two versions
+>
+> Asking for two versions is a small trick that works well. Seeing the softer and firmer options side by side makes it much easier to judge where you want to land.
 
 ## Keep your details out of it
 
 You don't need to give the AI real names or private details to get a good draft. In fact, it's better not to.
 
-- **Use placeholders.** Write "[client]" or "[parent]" instead of real names, and add them yourself at the end.
-- **Leave out anything confidential.** Account numbers, health information, anything about a child that could identify them, or details covered by a work confidentiality policy.
-- **Check your organisation's rules.** Many schools and businesses have a policy on which AI tools staff can use, and for what. If yours does, follow it. If it doesn't, it's worth asking.
+> [!privacy]
+>
+> - **Use placeholders.** Write "[client]" or "[parent]" instead of real names, and add them yourself at the end.
+> - **Leave out anything confidential.** Account numbers, health information, anything about a child that could identify them, or details covered by a work confidentiality policy.
+> - **Check your organisation's rules.** Many schools and businesses have a policy on which AI tools staff can use, and for what. If yours does, follow it. If it doesn't, it's worth asking.
 
 ## Make it sound like you
 
@@ -77,7 +81,9 @@ The same four-part formula works for:
 
 ## Where to stop
 
-AI is a helpful drafting partner, but some messages need more than a well-worded email. If you're dealing with a formal complaint, anything legal, a safeguarding concern, a disciplinary matter or a serious conflict, follow your organisation's process and get advice from the right person. Use AI to help you think, not to decide.
+> [!warning]
+>
+> AI is a helpful drafting partner, but some messages need more than a well-worded email. If you're dealing with a formal complaint, anything legal, a safeguarding concern, a disciplinary matter or a serious conflict, follow your organisation's process and get advice from the right person. Use AI to help you think, not to decide.
 
 ## The human bit
 
