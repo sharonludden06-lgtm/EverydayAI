@@ -250,6 +250,8 @@
 .guide-body h2{font-size:clamp(32px,3.6vw,42px);line-height:1.1;color:var(--ink);margin:56px 0 18px}
 .guide-body h3{font:400 25px/1.25 Georgia,serif;color:var(--ink);margin:36px 0 12px}
 .guide-body ul,.guide-body ol{padding-left:24px}
+.guide-body ul{list-style:disc}
+.guide-body ol{list-style:decimal}
 .guide-body li{margin-bottom:8px}
 .guide-body li::marker{color:var(--blue)}
 .guide-body strong{color:var(--ink)}
