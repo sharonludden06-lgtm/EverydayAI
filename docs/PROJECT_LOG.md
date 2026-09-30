@@ -4,6 +4,7 @@ A lightweight record of important decisions and outstanding work. Newest first. 
 
 ## Decisions
 
+- **2026-09-30**: Stage 5 built and tested on the working branch (not in `main`): `lib/guides.ts` reads `content/guides/*.md` (how-to in `content/README.md`), cards and `/resources/<slug>` pages generated, Preview shows unpublished guides with a banner. Four guide drafts added (status coming-soon, one commit each) for Sharon's review. ChatGPT's free-plan upload limit is only partially verified (OpenAI help page unreadable), so guides don't state a number. Awaiting Preview review.
 - **2026-09-30**: Stage 5 (guide publishing system) approved and started on the working branch: one Markdown file per guide in `content/guides/` builds its Resources card, filter placement and `/resources/<slug>` page. Statuses draft / coming-soon / published; the four existing cards stay "Guide coming soon" (option b); optional `checked` date; home tips link to a guide only once it's published; Resources stays highlighted on guide pages. Claude drafts the four guides for Sharon's review; nothing published or merged without her approval.
 - **2026-09-30**: Sharon switched Friday research on for the live site. First live run: Friday 2 October (about 5am–11am UK time); summary email and a read-only database check to follow.
 - **2026-09-30**: Resources fix is live (sharonludden06-lgtm/EverydayAI#4): Production deployment Ready, and Sharon confirmed the live Resources page is correct. Stage 4 was merged earlier (sharonludden06-lgtm/EverydayAI#3), with Friday research still switched off.
@@ -38,7 +39,7 @@ A lightweight record of important decisions and outstanding work. Newest first. 
 
 ## Outstanding work
 
-- [ ] Resources page: real guide pages are needed (cards show "Guide coming soon" for now). Recommended later: one Markdown file per guide in the repo, generating its page and card automatically.
+- [ ] Stage 5: Sharon to review the guide system and the four drafts on Preview; then approve merge. Guides stay "coming soon" until she approves each one for publishing.
 - [ ] Newsletter is in rehearsal mode; going live needs the domain verified in Resend, then `NEWSLETTER_FROM` and `SENDING_ENABLED=true` set in Vercel (Sharon to do, or approve).
 - [ ] No automated checks (tests/linting) yet; consider adding a simple type-check.
 - [ ] Future: glossary page for technical terms.
