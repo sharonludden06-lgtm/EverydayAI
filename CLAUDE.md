@@ -106,7 +106,7 @@ A Next.js app (a popular framework for building websites with React) hosted on *
 | Dates and times | `lib/uk-time.ts` | Stored as exact moments (TIMESTAMPTZ); the admin area shows them in UK time (`Europe/London`, GMT/BST automatic). The CSV has both UTC and UK columns. |
 | Settings/secrets | `.env.example`, Vercel environment variables, `lib/config.ts` | **Protected** |
 
-Known gaps (not bugs to fix silently): the Resources "Open guide" links point to `#` and the filter chips don't filter yet.
+Known gaps (not bugs to fix silently): there are no guide pages yet, so each Resources card shows "Guide coming soon" instead of a link. The Resources cards are hard-coded in `app/resources/page.tsx` (each has a filter `category`); the filter buttons live in `components/resource-filter.tsx`, and a filter with no guides (currently Tools) shows a "coming" message linking to the existing newsletter sign-up.
 
 ### Commands
 
