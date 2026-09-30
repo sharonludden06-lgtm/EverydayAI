@@ -5,7 +5,8 @@ summary: Turn a photo of your fridge and a busy calendar into a realistic meal p
 category: Home & family
 label: Home & family
 icon: house
-status: coming-soon
+status: published
+published: 2026-09-30
 checked: 2026-09-30
 order: 1
 ---

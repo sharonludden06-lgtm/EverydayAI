@@ -5,7 +5,8 @@ summary: Ask AI to spot the hidden admin in your week and create a lighter routi
 category: Work
 label: Time saver
 icon: clock
-status: coming-soon
+status: published
+published: 2026-09-30
 checked: 2026-09-30
 order: 4
 ---

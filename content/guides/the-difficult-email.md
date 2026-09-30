@@ -5,7 +5,8 @@ summary: A simple prompt formula for messages that are firm, warm and unmistakab
 category: Work
 label: Work smarter
 icon: briefcase
-status: coming-soon
+status: published
+published: 2026-09-30
 checked: 2026-09-30
 order: 2
 ---

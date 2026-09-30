@@ -5,7 +5,8 @@ summary: Five genuinely useful starting points you can copy, paste and adapt tod
 category: Prompts
 label: Start here
 icon: wand
-status: coming-soon
+status: published
+published: 2026-09-30
 checked: 2026-09-30
 order: 3
 ---
