@@ -6,6 +6,9 @@ import { Menu, X } from "lucide-react";
 
 const links = [["/", "Home"], ["/resources", "Resources"], ["/newsletter", "The Edit"], ["/work-with-us", "Work with us"], ["/about", "About"]];
 
+// A section stays highlighted on its inner pages too, e.g. Resources on /resources/the-sunday-reset.
+const isActive = (path: string, href: string) => path === href || (href !== "/" && path.startsWith(`${href}/`));
+
 export function SiteHeader() {
   const path = usePathname();
   const [open, setOpen] = useState(false);
@@ -20,7 +23,7 @@ export function SiteHeader() {
         </Link>
         <nav>
           {links.map(([href, label]) => (
-            <Link className={path === href ? "active" : ""} href={href} key={href}>{label}</Link>
+            <Link className={isActive(path, href) ? "active" : ""} href={href} key={href}>{label}</Link>
           ))}
         </nav>
         <Link href="/newsletter#signup" className="nav-cta">Get the newsletter</Link>
@@ -36,7 +39,7 @@ export function SiteHeader() {
       </div>
       <div id="mobile-nav" className={`mobile-nav${open ? " open" : ""}`}>
         {links.map(([href, label]) => (
-          <Link className={path === href ? "active" : ""} href={href} key={href}>{label}</Link>
+          <Link className={isActive(path, href) ? "active" : ""} href={href} key={href}>{label}</Link>
         ))}
         <Link href="/newsletter#signup">Get the newsletter</Link>
       </div>

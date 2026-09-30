@@ -4,6 +4,12 @@ A lightweight record of important decisions and outstanding work. Newest first. 
 
 ## Decisions
 
+- **2026-09-30**: Sharon approved the guide-page design direction. Applied it to the other three drafts (panels only where warranted), added Step/Prompt section labels; all four guides still coming-soon, awaiting individual Preview review before content/fact checking and publication.
+- **2026-09-30**: Sharon did not approve the first guide-page design (too text-heavy). Redesigned the shared `/resources/[slug]` template on the working branch: hero, contents list, reading column, and reusable Markdown building blocks (prompt boxes with Copy, privacy/warning/tip/note panels, steps, tick lists). The Sunday Reset is the test guide. Awaiting Preview review; not merged.
+- **2026-09-30**: Stage 5 built and tested on the working branch (not in `main`): `lib/guides.ts` reads `content/guides/*.md` (how-to in `content/README.md`), cards and `/resources/<slug>` pages generated, Preview shows unpublished guides with a banner. Four guide drafts added (status coming-soon, one commit each) for Sharon's review. ChatGPT's free-plan upload limit is only partially verified (OpenAI help page unreadable), so guides don't state a number. Awaiting Preview review.
+- **2026-09-30**: Stage 5 (guide publishing system) approved and started on the working branch: one Markdown file per guide in `content/guides/` builds its Resources card, filter placement and `/resources/<slug>` page. Statuses draft / coming-soon / published; the four existing cards stay "Guide coming soon" (option b); optional `checked` date; home tips link to a guide only once it's published; Resources stays highlighted on guide pages. Claude drafts the four guides for Sharon's review; nothing published or merged without her approval.
+- **2026-09-30**: Sharon switched Friday research on for the live site. First live run: Friday 2 October (about 5am–11am UK time); summary email and a read-only database check to follow.
+- **2026-09-30**: Resources fix is live (sharonludden06-lgtm/EverydayAI#4): Production deployment Ready, and Sharon confirmed the live Resources page is correct. Stage 4 was merged earlier (sharonludden06-lgtm/EverydayAI#3), with Friday research still switched off.
 - **2026-09-30**: Resources filters found not to work (placeholder since the site's first version, not caused by Stage 4). Built on the working branch: real filter buttons (Home & family, Work, Prompts, Tools), a "Tools are coming" message linking to the existing sign-up, and "Guide coming soon" instead of dead "Open guide" links. Cards still hard-coded. Awaiting Preview check.
 - **2026-09-29**: Approved and built: Friday "try again later" protection. Only a 503/529 refusal of a step's first request is left for the next Friday job (max 2 attempts, never in the same job); timeouts, cut-offs and other errors still aren't retried; manual research unchanged. Tested locally (8 scenarios).
 - **2026-09-29**: First Preview Friday test failed at step 1 with "503 status code (no body)": Anthropic's service refused the request (temporarily unavailable) before doing any work; one request, no retry, $0.00 recorded. Reproduced locally. Clearer message added (with Anthropic's request reference when given). Whether to let the next Friday job try a step again after such a refusal is awaiting Sharon's decision.
@@ -35,10 +41,10 @@ A lightweight record of important decisions and outstanding work. Newest first. 
 
 ## Outstanding work
 
-- [ ] Resources page: real guide pages are needed (cards show "Guide coming soon" for now). Recommended later: one Markdown file per guide in the repo, generating its page and card automatically.
+- [ ] Stage 5: Sharon to review the guide system and the four drafts on Preview; then approve merge. Guides stay "coming soon" until she approves each one for publishing.
 - [ ] Newsletter is in rehearsal mode; going live needs the domain verified in Resend, then `NEWSLETTER_FROM` and `SENDING_ENABLED=true` set in Vercel (Sharon to do, or approve).
 - [ ] No automated checks (tests/linting) yet; consider adding a simple type-check.
 - [ ] Future: glossary page for technical terms.
 - [ ] Future: create the remaining specialist agents (Content, Website, AI Adoption Consultant, Education AI) when ready.
 - [ ] Supabase fallback period: watch the first Saturday draft and Sunday send; later decide whether to retire Neon (Sharon's approval).
-- [ ] Automated research: Stage 3 is live. Stage 4 (Friday schedule + summary email) built on the working branch: awaiting Preview test, merge approval, then switching on. Stage 5 (feed Saturday) needs separate approval.
+- [ ] Automated research: Stages 3 and 4 are live. Friday research switched on 30 September. Next: check the first live Friday (2 October) and its summary email. Stage 5 (feed Saturday) needs separate approval.
