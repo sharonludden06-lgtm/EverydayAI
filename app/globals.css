@@ -227,6 +227,8 @@
 .research-steps .outcome-refused{color:#5c4500;font-weight:700}
 /* Resources: guides not written yet, and a filter with no guides yet */
 .resource-meta .resource-soon{font:italic 15px Georgia,serif;color:var(--blue)}
+.resource-meta a{color:var(--blue)}
+.resource-meta a.resource-preview{font:italic 15px Georgia,serif;text-decoration:underline;text-underline-offset:3px}
 .resource-empty{border:1px solid var(--line);background:#eaf1ff;padding:56px 34px;min-height:390px;display:flex;flex-direction:column;justify-content:center;align-items:flex-start}
 .resource-empty h2{font-size:42px;margin:0 0 16px}
 .resource-empty p{color:#3f4b58;line-height:1.7;max-width:520px;margin-bottom:8px}
