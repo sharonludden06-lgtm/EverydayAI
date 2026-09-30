@@ -221,3 +221,7 @@
 .research-steps .outcome-failed,.research-steps .outcome-cut_off{color:#a52832;font-weight:700}
 .research-steps .outcome-running{color:#5c4500;font-weight:700}
 .research-steps .outcome-dropped{color:#5b6572;font-weight:700}
+.research-run-box .inline-form{display:inline}
+.research-run-box .inline-form button.text-link{background:none;border:0;border-bottom:1px solid #76808b;cursor:pointer;font-family:inherit;padding:0 0 2px}
+.research-buttons form button.text-link{background:none;border:0;border-bottom:1px solid #76808b;cursor:pointer;font-family:inherit;padding:0 0 3px}
+.research-steps .outcome-refused{color:#5c4500;font-weight:700}

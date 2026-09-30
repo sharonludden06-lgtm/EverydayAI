@@ -21,7 +21,8 @@ import { ukIsoDate, ukLongDate } from "@/lib/uk-time";
 export const RESEARCH_MODEL = "claude-sonnet-5";
 export const MAX_SEARCHES = 8; // per run, across all of its steps
 export const MAX_PAGES = 8; // page-read attempts per run, across all of its steps
-export const WEEKLY_CAP_USD = 2.5; // US dollars, rolling 7 days, on top of the $10/month Anthropic workspace limit
+export const WEEKLY_CAP_USD = 2.5; // US dollars per research week (Friday 00:00 to Thursday 23:59, UK time)
+export const MONTHLY_CAP_USD = 8; // US dollars per calendar month (UK time), so research can't use the whole $10 Anthropic allowance
 const WINDOW_DAYS = 7;
 const MAX_PAGE_TOKENS = 12000; // cap on how much of each page is read
 
@@ -35,6 +36,10 @@ const STEP_BUDGET_MS = 200_000; // time for Anthropic calls within one step
 const CALL_MARGIN_MS = 10_000; // each call must end at least this long before the step's budget runs out
 const MIN_CALL_TIME_MS = 45_000; // don't start another call with less than this left
 const MAX_CALLS_PER_STEP = 3;
+// When a step runs inside a scheduled job, it gets only the time the job has left (minus this margin),
+// and isn't started at all with less than MIN_STEP_TIME_MS left.
+const JOB_MARGIN_MS = 20_000;
+export const MIN_STEP_TIME_MS = 70_000;
 // A step holds a lock for longer than any request can live on Vercel (300 s), so a lock is only ever
 // taken over from a request that has certainly stopped.
 const LOCK_SECONDS = 330;
@@ -73,7 +78,7 @@ export function isArea(value: string): value is ResearchArea {
   return value in AREAS;
 }
 
-function environment() {
+export function researchEnvironment() {
   const env = process.env.VERCEL_ENV;
   return env === "production" ? "live" : env === "preview" ? "preview" : "local";
 }
@@ -282,12 +287,47 @@ function billed(u: Anthropic.Usage) {
   };
 }
 
-export async function spentThisWeek() {
+/** The research week's first day (the latest Friday, UK date), e.g. "2026-09-25". */
+export function researchWeekStart(now = new Date()) {
+  const today = ukIsoDate(0, now);
+  const dayOfWeek = new Date(`${today}T00:00:00Z`).getUTCDay(); // 5 = Friday
+  return ukIsoDate((dayOfWeek - 5 + 7) % 7, now);
+}
+
+/** The first day of this calendar month (UK date), e.g. "2026-09-01". */
+export function researchMonthStart(now = new Date()) {
+  return `${ukIsoDate(0, now).slice(0, 8)}01`;
+}
+
+/**
+ * Estimated research spending (all runs, manual and scheduled, Preview and live: they share one Anthropic workspace)
+ * this research week and this calendar month. A run counts in the week and month it started, measured in UK time.
+ */
+export async function researchSpending(now = new Date()) {
   const sql = await getResearchSql();
+  const weekStart = researchWeekStart(now);
+  const monthStart = researchMonthStart(now);
   const [row] = (await sql`
-    SELECT COALESCE(SUM(estimated_cost_usd), 0)::float AS spent FROM research_runs
-     WHERE started_at > now() - interval '7 days'`) as { spent: number }[];
-  return Number(row?.spent ?? 0);
+    SELECT
+      COALESCE(SUM(estimated_cost_usd) FILTER (WHERE started_at >= (${weekStart}::date::timestamp AT TIME ZONE 'Europe/London')), 0)::float AS week,
+      COALESCE(SUM(estimated_cost_usd) FILTER (WHERE started_at >= (${monthStart}::date::timestamp AT TIME ZONE 'Europe/London')), 0)::float AS month
+      FROM research_runs`) as { week: number; month: number }[];
+  return { week: Number(row?.week ?? 0), month: Number(row?.month ?? 0), weekStart, monthStart };
+}
+
+type BudgetStop = { reason: "weekly_cap" | "monthly_cap"; message: string };
+export type LimitReason = BudgetStop["reason"] | "spend_limit";
+
+/** Whether there's room for a step costing up to `reserve`. Checked before every step, so no request is sent without room. */
+export async function budgetProblem(reserve: number): Promise<BudgetStop | null> {
+  const s = await researchSpending();
+  if (s.month + reserve > MONTHLY_CAP_USD) {
+    return { reason: "monthly_cap", message: `This month's research safety limit ($${MONTHLY_CAP_USD.toFixed(2)}) doesn't leave enough for another step ($${s.month.toFixed(2)} used).` };
+  }
+  if (s.week + reserve > WEEKLY_CAP_USD) {
+    return { reason: "weekly_cap", message: `This research week's budget ($${WEEKLY_CAP_USD.toFixed(2)}, Friday to Thursday) doesn't leave enough for another step ($${s.week.toFixed(2)} used).` };
+  }
+  return null;
 }
 
 /**
@@ -370,7 +410,11 @@ function outcome(plan: ResearchPlan): { status: RunStatus; notes: string; error:
   ].filter(Boolean);
   const stopped =
     plan.stop_reason === "weekly_cap"
-      ? `Stopped at the weekly research budget ($${WEEKLY_CAP_USD.toFixed(2)}).`
+      ? `Stopped at the research-week budget ($${WEEKLY_CAP_USD.toFixed(2)}, Friday to Thursday).`
+      : plan.stop_reason === "monthly_cap"
+        ? `Stopped at the monthly research safety limit ($${MONTHLY_CAP_USD.toFixed(2)}).`
+      : plan.stop_reason === "scheduled"
+        ? "Stopped automatically so the Friday research could start; findings already saved are kept."
       : plan.stop_reason === "spend_limit"
         ? "The Anthropic research spend limit has been reached, so the run stopped."
         : plan.stop_reason === "user"
@@ -381,21 +425,37 @@ function outcome(plan: ResearchPlan): { status: RunStatus; notes: string; error:
   if (stopped) notes.push(stopped);
   const joined = notes.join(" ").slice(0, 4000) || "";
 
-  if (plan.stop_reason === "weekly_cap" || plan.stop_reason === "spend_limit") {
+  const byPerson = plan.stop_reason === "user" || plan.stop_reason === "scheduled"; // stopped on purpose, not failed
+  if (["weekly_cap", "monthly_cap", "spend_limit"].includes(plan.stop_reason)) {
     return { status: "stopped_limit", notes: joined, error: stopped };
   }
   if (plan.discovery.status !== "done") {
     const why = plan.discovery.note || stopped || "The search step didn't finish.";
-    return { status: plan.stop_reason === "user" ? "partial" : "failed", notes: joined, error: why };
+    return { status: byPerson ? "partial" : "failed", notes: joined, error: why };
   }
   if (plan.candidates.length > 0 && saved === 0 && notDone.length > 0) {
-    return { status: plan.stop_reason === "user" ? "partial" : "failed", notes: joined, error: "No candidate could be checked and saved." };
+    return { status: byPerson ? "partial" : "failed", notes: joined, error: byPerson ? stopped : "No candidate could be checked and saved." };
   }
   return { status: notDone.length > 0 ? "partial" : "complete", notes: joined, error: null };
 }
 
 // ---------------------------------------------------------------------------------------------------------
 // Saving: every change to a run goes through one short transaction that first checks this request still holds the lock
+
+/**
+ * Anthropic answered that it was temporarily unavailable (503) or overloaded (529). `beforeAnyWork` is true only when
+ * this was the step's first request, so nothing in the step had been carried out or charged yet.
+ */
+class AnthropicRefused extends Error {
+  constructor(message: string, readonly status: number, readonly beforeAnyWork: boolean) {
+    super(message);
+  }
+}
+
+// Friday research only: a step Anthropic refused as unavailable/overloaded before any work is left unfinished for the
+// next Friday job, at most this many attempts in all. Never tried again within the same job.
+export const MAX_REFUSED_ATTEMPTS = 2;
+const RETRY_LATER_STATUSES = [503, 529];
 
 class LostLock extends Error {
   constructor() {
@@ -470,13 +530,14 @@ async function converse(opts: {
   allowance: Allowance;
   record: typeof CANDIDATES_TOOL | typeof FINDING_TOOL;
   onReply: (usage: Usage) => Promise<unknown>;
+  budgetMs: number;
 }) {
   const apiKey = process.env.ANTHROPIC_RESEARCH_API_KEY;
   if (!apiKey) throw new Error("ANTHROPIC_RESEARCH_API_KEY is not set in Vercel.");
   // Only the research key is ever used here, never the newsletter's key.
   // No automatic retries: a retried call could repeat its cost without anyone choosing to.
   const client = new Anthropic({ apiKey, maxRetries: 0 });
-  const deadline = Date.now() + STEP_BUDGET_MS;
+  const deadline = Date.now() + opts.budgetMs;
   const used: Allowance = { searches: 0, fetches: 0 };
   const opened = new Set<string>();
   const messages: Anthropic.MessageParam[] = [{ role: "user", content: opts.prompt }];
@@ -519,6 +580,13 @@ async function converse(opts: {
     } catch (error) {
       if (error instanceof Anthropic.APIConnectionTimeoutError) {
         throw new Error("The request to Anthropic took too long and was stopped to stay within the time limit. It wasn't repeated. Its cost isn't included here; check the Anthropic Console for the exact figure.");
+      }
+      // Anthropic's service answered that it was unavailable or overloaded, so the request wasn't carried out.
+      if (error instanceof Anthropic.APIError && [500, 502, 503, 504, 529].includes(error.status as number)) {
+        const ref = error.requestID ? ` Anthropic's reference for this request: ${error.requestID}.` : "";
+        const message = `Anthropic's service was temporarily unavailable (error ${error.status}) and didn't carry out this request, so nothing was searched or read. It wasn't repeated.${ref}`;
+        if (RETRY_LATER_STATUSES.includes(error.status as number)) throw new AnthropicRefused(message, error.status as number, i === 0);
+        throw new Error(message);
       }
       throw error;
     }
@@ -567,25 +635,36 @@ function windowLine() {
 }
 
 /** Creates a run and its plan. Costs nothing: no request is sent until a step is run. */
-export async function startResearchRun(area: ResearchArea) {
+export async function startResearchRun(
+  area: ResearchArea,
+  opts: { scheduled?: boolean } = {},
+): Promise<{ id: number | null; message: string; created: boolean; limit?: BudgetStop["reason"] }> {
   const sql = await getResearchSql();
   await markAbandonedRuns();
-  const spent = await spentThisWeek();
-  if (spent + STEP_RESERVE_USD.discovery > WEEKLY_CAP_USD) {
-    return { id: null, message: `There isn't enough left of this week's research budget to start a run ($${spent.toFixed(2)} of $${WEEKLY_CAP_USD.toFixed(2)} used in the last 7 days).` };
-  }
-  // One open run at a time. The transaction lock stops two clicks (or two tabs) creating two runs.
+  const problem = await budgetProblem(STEP_RESERVE_USD.discovery);
+  if (problem) return { id: null, message: `No run started: ${problem.message}`, created: false, limit: problem.reason };
+  // One open run at a time. The transaction lock stops two clicks, two tabs or two jobs creating two runs.
   return sql.begin(async (tx) => {
     await tx`SELECT pg_advisory_xact_lock(724301)`;
     const [open] = (await tx`SELECT id, area FROM research_runs WHERE status = 'running' LIMIT 1`) as { id: number; area: ResearchArea }[];
     if (open) {
-      return { id: open.id, message: `A research run (${AREAS[open.area]?.label ?? open.area}) is already open. Continue or stop it first.` };
+      return { id: open.id, created: false, message: `A research run (${AREAS[open.area]?.label ?? open.area}) is already open. Continue or stop it first.` };
+    }
+    if (opts.scheduled) {
+      // Scheduled research runs each area at most once per research week in each environment.
+      const [done] = (await tx`
+        SELECT id FROM research_runs
+         WHERE trigger = 'scheduled' AND area = ${area} AND environment = ${researchEnvironment()}
+           AND started_at >= (${researchWeekStart()}::date::timestamp AT TIME ZONE 'Europe/London')
+         LIMIT 1`) as { id: number }[];
+      if (done) return { id: done.id, created: false, message: `${AREAS[area].label} has already been researched this week.` };
     }
     const [run] = (await tx`
       INSERT INTO research_runs (week_of, area, trigger, environment, status, model, last_activity_at, plan)
-      VALUES (${ukIsoDate()}, ${area}, 'manual', ${environment()}, 'running', ${RESEARCH_MODEL}, now(), ${tx.json(newPlan() as never)})
+      VALUES (${ukIsoDate()}, ${area}, ${opts.scheduled ? "scheduled" : "manual"}, ${researchEnvironment()}, 'running', ${RESEARCH_MODEL}, now(),
+              ${tx.json(newPlan() as never)})
       RETURNING id`) as { id: number }[];
-    return { id: run.id, message: `${AREAS[area].label}: run created. Nothing has been spent yet; press “Run next step” to begin.` };
+    return { id: run.id, created: true, message: `${AREAS[area].label}: run created. Nothing has been spent yet; press “Run next step” to begin.` };
   });
 }
 
@@ -594,7 +673,13 @@ export async function startResearchRun(area: ResearchArea) {
  * Safe to call again after a refresh, a lost connection or from another tab: a step already in progress
  * is never started twice, and a finished step is never repeated.
  */
-export async function advanceResearchRun(runId: number): Promise<{ message: string; finished: boolean }> {
+export async function advanceResearchRun(
+  runId: number,
+  opts: { deadline?: number; retryLater?: boolean } = {},
+): Promise<{ message: string; finished: boolean; noTime?: boolean; busy?: boolean; postponed?: boolean; limit?: LimitReason }> {
+  // Inside a scheduled job, a step only starts if it can finish well within the job's time.
+  const budgetMs = opts.deadline ? Math.min(STEP_BUDGET_MS, opts.deadline - Date.now() - JOB_MARGIN_MS) : STEP_BUDGET_MS;
+  if (budgetMs < MIN_STEP_TIME_MS - JOB_MARGIN_MS) return { message: "Not enough time left in this job to start another step.", finished: false, noTime: true };
   await markAbandonedRuns();
   const lock = randomUUID();
   const row = await takeLock(runId, lock);
@@ -603,7 +688,7 @@ export async function advanceResearchRun(runId: number): Promise<{ message: stri
     const [r] = (await sql`SELECT status, step_lock_until FROM research_runs WHERE id = ${runId}`) as ResearchRun[];
     if (!r) return { message: "That run no longer exists.", finished: true };
     if (r.status !== "running") return { message: "This run has already finished.", finished: true };
-    return { message: "A step is already running for this run (perhaps in another tab, or from before a refresh). Please wait for it to finish; this page checks again automatically.", finished: false };
+    return { message: "A step is already running for this run (perhaps in another tab, or from before a refresh). Please wait for it to finish; this page checks again automatically.", finished: false, busy: true };
   }
 
   let released = false;
@@ -618,13 +703,13 @@ export async function advanceResearchRun(runId: number): Promise<{ message: stri
 
     const step = nextStep(plan);
     const reserve = step.kind === "discovery" ? STEP_RESERVE_USD.discovery : STEP_RESERVE_USD.verify;
-    const spent = step.kind === "finish" ? 0 : await spentThisWeek();
+    const budget = step.kind === "finish" ? null : await budgetProblem(reserve);
     const pagesLeft = MAX_PAGES - row.fetches_used;
     const searchesLeft = MAX_SEARCHES - row.searches_used;
 
     // Nothing left to do, or a limit reached: finish without calling Anthropic.
     let stop = "";
-    if (step.kind !== "finish" && spent + reserve > WEEKLY_CAP_USD) stop = "weekly_cap";
+    if (budget) stop = budget.reason;
     else if (step.kind === "discovery" && searchesLeft <= 0) stop = "allowance";
     else if (step.kind === "verify" && pagesLeft <= 0) stop = "allowance";
     if (step.kind === "finish" || stop) {
@@ -632,18 +717,22 @@ export async function advanceResearchRun(runId: number): Promise<{ message: stri
         if (stop) {
           p.stop_reason = stop;
           if (p.discovery.status === "pending") p.discovery = { status: "skipped", note: "" };
-          const why = stop === "weekly_cap" ? "the weekly research budget was reached" : "the run's page-read allowance was used up";
+          const why =
+            stop === "weekly_cap" ? "the research-week budget was reached"
+            : stop === "monthly_cap" ? "the monthly research safety limit was reached"
+            : "the run's page-read allowance was used up";
           for (const c of p.candidates) if (c.status === "pending") { c.status = "skipped"; c.note = `Not checked: ${why}.`; }
         }
         return { finish: true };
       });
       released = true;
-      const early =
-        stop === "weekly_cap"
-          ? `the weekly research budget ($${WEEKLY_CAP_USD.toFixed(2)}) doesn't leave enough for another step`
-          : `the run's allowance (${MAX_SEARCHES} searches, ${MAX_PAGES} page reads) has been used`;
+      const early = budget ? budget.message : `The run's allowance (${MAX_SEARCHES} searches, ${MAX_PAGES} page reads) has been used.`;
       const o = outcome(final);
-      return { message: stop ? `Run finished early: ${early}. Findings already saved are kept.` : `Run finished (${o.status}).`, finished: true };
+      return {
+        message: stop ? `Run finished early. ${early} Findings already saved are kept.` : `Run finished (${o.status}).`,
+        finished: true,
+        limit: budget?.reason,
+      };
     }
 
     // Record that this step has started, so a cut-off is recognised later and never silently repeated.
@@ -690,6 +779,7 @@ export async function advanceResearchRun(runId: number): Promise<{ message: stri
           allowance: { searches: Math.min(DISCOVERY_SEARCHES, searchesLeft), fetches: 0 },
           record: CANDIDATES_TOOL,
           onReply,
+          budgetMs,
         });
       } else {
         const c = plan.candidates[step.index];
@@ -710,19 +800,41 @@ export async function advanceResearchRun(runId: number): Promise<{ message: stri
           allowance,
           record: FINDING_TOOL,
           onReply,
+          budgetMs,
         });
       }
     } catch (error) {
       if (error instanceof LostLock) throw error;
-      const message = error instanceof Error ? error.message : String(error);
+      // Friday research only: Anthropic refused this step's first request as unavailable/overloaded, so nothing was
+      // carried out or charged. Leave the step unfinished for the next Friday job (at most MAX_REFUSED_ATTEMPTS in all).
+      if (opts.retryLater && error instanceof AnthropicRefused && error.beforeAnyWork) {
+        const before = step.kind === "discovery" ? (plan.discovery.refusals ?? 0) : (plan.candidates[step.index].refusals ?? 0);
+        if (before + 1 < MAX_REFUSED_ATTEMPTS) {
+          const note = `${error.message.replace(" It wasn't repeated.", "")} The next Friday job will try this step once more.`;
+          await save(runId, lock, (p) => {
+            closeLog(p, "refused", note);
+            if (step.kind === "discovery") p.discovery = { status: "pending", note: "", refusals: before + 1 };
+            else Object.assign(p.candidates[step.index], { status: "pending", refusals: before + 1 });
+            return { release: true };
+          });
+          released = true;
+          return { message: `Step ${log.n}: ${note}`, finished: false, postponed: true };
+        }
+      }
+      const refusedTwice = error instanceof AnthropicRefused && error.beforeAnyWork && opts.retryLater;
+      const message =
+        refusedTwice
+          ? `${(error as Error).message.replace(" It wasn't repeated.", "")} This was attempt ${MAX_REFUSED_ATTEMPTS} of ${MAX_REFUSED_ATTEMPTS}, so the step is marked Failed and won't be tried again.`
+          : error instanceof Error ? error.message : String(error);
       const limit = /usage limits|spend limit|credit balance/i.test(message);
       const note = limit ? "The Anthropic research spend limit has been reached." : message.slice(0, 500);
       // The step failed: record it (not repeated), and carry on unless nothing more can be done.
       const finish = limit || step.kind === "discovery";
       await save(runId, lock, (p) => {
         closeLog(p, "failed", note);
-        if (step.kind === "discovery") p.discovery = { status: "failed", note };
-        else Object.assign(p.candidates[step.index], { status: "failed", note });
+        const refusals = error instanceof AnthropicRefused ? 1 : 0;
+        if (step.kind === "discovery") p.discovery = { status: "failed", note, refusals: (p.discovery.refusals ?? 0) + refusals };
+        else Object.assign(p.candidates[step.index], { status: "failed", note, refusals: (p.candidates[step.index].refusals ?? 0) + refusals });
         if (limit) {
           p.stop_reason = "spend_limit";
           for (const c of p.candidates) if (c.status === "pending") { c.status = "skipped"; c.note = "Not checked: the spend limit was reached."; }
@@ -730,7 +842,11 @@ export async function advanceResearchRun(runId: number): Promise<{ message: stri
         return finish ? { finish: true } : { release: true };
       });
       released = true;
-      return { message: `Step ${log.n} failed: ${note}${finish ? "" : " It won't be repeated; the next step can continue."}`, finished: finish };
+      return {
+        message: `Step ${log.n} failed: ${note}${finish ? "" : " It won't be repeated; the next step can continue."}`,
+        finished: finish,
+        limit: limit ? "spend_limit" : undefined,
+      };
     }
 
     const checkedAt = new Date().toISOString();
@@ -809,7 +925,7 @@ export async function advanceResearchRun(runId: number): Promise<{ message: stri
     const finished = nextStep(after).kind === "finish";
     return { message: `Step ${log.n} (“${plan.candidates[step.index].title}”) ${verdict}${finished ? " That was the last step, so the run is finished." : ""}`, finished };
   } catch (error) {
-    if (error instanceof LostLock) return { message: error.message, finished: false };
+    if (error instanceof LostLock) return { message: error.message, finished: false, busy: true };
     throw error;
   } finally {
     // If anything unexpected happened, free the run so Continue can pick it up. The step itself stays
@@ -819,14 +935,14 @@ export async function advanceResearchRun(runId: number): Promise<{ message: stri
 }
 
 /** Stops a run between steps, keeping everything already saved. */
-export async function stopResearchRun(runId: number) {
+export async function stopResearchRun(runId: number, reason: "user" | "scheduled" = "user") {
   const lock = randomUUID();
   const row = await takeLock(runId, lock);
   if (!row) return { message: "This run can't be stopped right now: a step is still running, or it has already finished." };
   try {
     await save(runId, lock, (p) => {
       markCutOff(p);
-      p.stop_reason = "user";
+      p.stop_reason = reason;
       if (p.discovery.status === "pending") p.discovery = { status: "skipped", note: "" };
       for (const c of p.candidates) if (c.status === "pending") { c.status = "skipped"; c.note = "Not checked: the run was stopped."; }
       return { finish: true };
