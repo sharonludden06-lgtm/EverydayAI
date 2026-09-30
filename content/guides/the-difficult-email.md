@@ -53,7 +53,7 @@ You don't need to give the AI real names or private details to get a good draft.
 >
 > - **Use placeholders.** Write "[client]" or "[parent]" instead of real names, and add them yourself at the end.
 > - **Leave out anything confidential.** Account numbers, health information, anything about a child that could identify them, or details covered by a work confidentiality policy.
-> - **Check your organisation's rules.** Many schools and businesses have a policy on which AI tools staff can use, and for what. If yours does, follow it. If it doesn't, it's worth asking.
+> - **Check your organisation's rules.** Many schools and businesses have a policy on which AI tools staff can use, and for what. If yours does, follow it. If your workplace provides an approved AI tool, use that for work emails rather than a personal account. If there's no policy, it's worth asking.
 
 ## Make it sound like you
 
@@ -65,7 +65,7 @@ A first draft from an AI tends to be a little too polished, a little too eager, 
 
 > Remove the first sentence and any phrases that sound like a template.
 
-> Here's an email I've written before that sounds like me. Match this style. [paste an old email, with names removed]
+> Here's an email I've written before that sounds like me. Match this style. [paste an old email, with names and personal details removed]
 
 Then read it through as the person receiving it. Would it make sense to them? Would it feel fair? Would you be happy if they forwarded it to someone else?
 
