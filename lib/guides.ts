@@ -177,25 +177,86 @@ const esc = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 const safeHref = (href: string) => /^(https?:\/\/|mailto:|\/(?!\/)|#)/i.test(href);
 
-// Markdown → HTML. As in the newsletter, raw HTML in a guide is shown as text rather than run,
-// and only ordinary web, email and on-site links are allowed.
-const md = new Marked({ gfm: true });
-md.use({
-  renderer: {
-    html: ({ text }) => esc(text),
-    link({ href, title, tokens }) {
-      const text = this.parser.parseInline(tokens);
-      if (!safeHref(href)) return text;
-      const external = /^https?:\/\//i.test(href);
-      return `<a href="${esc(href)}"${title ? ` title="${esc(title)}"` : ""}${external ? ' rel="noopener noreferrer"' : ""}>${text}</a>`;
-    },
-    image({ href, title, text }) {
-      if (!/^(https:\/\/|\/(?!\/))/i.test(href)) return esc(text);
-      return `<img src="${esc(href)}" alt="${esc(text)}"${title ? ` title="${esc(title)}"` : ""} loading="lazy">`;
-    },
-  },
-});
+/**
+ * Guide building blocks, written in ordinary Markdown (see content/README.md):
+ *   > A plain quote block                → a prompt box with a "Copy prompt" button
+ *   > [!prompt] Optional heading         → the same, with its own heading
+ *   > [!privacy] / [!warning] / [!tip] / [!note]  (optional heading after it) → a callout panel
+ *   > [!quote]                           → an ordinary quotation
+ *   1. Numbered list                     → numbered steps
+ *   - [x] Task-list items                → a tick list
+ *   ## Section headings                  → listed in "In this guide"
+ */
+const CALLOUTS: Record<string, string> = {
+  privacy: "Privacy first",
+  warning: "Important",
+  tip: "Tip",
+  note: "Good to know",
+};
 
-export function renderGuideBody(body: string) {
-  return md.parse(body, { async: false }) as string;
+/** Turns &amp; &#39; etc. back into characters (the contents list is plain text). */
+const decode = (s: string) =>
+  s.replace(/&#(\d+);/g, (_, n) => String.fromCharCode(Number(n))).replace(/&quot;/g, '"').replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&");
+
+export type GuideHeading = { id: string; text: string };
+
+const slugify = (text: string) =>
+  text.toLowerCase().replace(/[*_`[\]()]/g, "").replace(/&[a-z]+;/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "section";
+
+/** Markdown → HTML plus the list of sections. As in the newsletter, raw HTML in a guide is shown as
+ * text rather than run, and only ordinary web, email and on-site links are allowed. */
+export function renderGuide(body: string): { html: string; headings: GuideHeading[] } {
+  const headings: GuideHeading[] = [];
+  const md = new Marked({ gfm: true });
+  md.use({
+    renderer: {
+      html: ({ text }) => esc(text),
+      link({ href, title, tokens }) {
+        const text = this.parser.parseInline(tokens);
+        if (!safeHref(href)) return text;
+        const external = /^https?:\/\//i.test(href);
+        return `<a href="${esc(href)}"${title ? ` title="${esc(title)}"` : ""}${external ? ' rel="noopener noreferrer"' : ""}>${text}</a>`;
+      },
+      image({ href, title, text }) {
+        if (!/^(https:\/\/|\/(?!\/))/i.test(href)) return esc(text);
+        return `<img src="${esc(href)}" alt="${esc(text)}"${title ? ` title="${esc(title)}"` : ""} loading="lazy">`;
+      },
+      heading({ tokens, depth, text }) {
+        const inner = this.parser.parseInline(tokens);
+        if (depth > 2) return `<h3>${inner}</h3>\n`;
+        let id = slugify(text);
+        while (headings.some((h) => h.id === id)) id += "-2";
+        headings.push({ id, text: decode(inner.replace(/<[^>]+>/g, "")) });
+        return `<h2 id="${id}">${inner}</h2>\n`;
+      },
+      blockquote({ tokens, text }) {
+        const marker = text.match(/^\s*\[!(\w+)\][ \t]*([^\n]*)\n?([\s\S]*)$/);
+        const type = marker?.[1].toLowerCase();
+        const heading = marker?.[2].trim() ?? "";
+        const inner = marker && type && (type in CALLOUTS || type === "prompt" || type === "quote") ? md.parse(marker[3], { async: false }) as string : this.parser.parse(tokens);
+        if (type === "quote") return `<blockquote class="guide-quote">${inner}</blockquote>\n`;
+        if (type && type in CALLOUTS) {
+          return `<aside class="guide-callout guide-callout-${type}" role="note"><p class="guide-callout-label">${esc(heading || CALLOUTS[type])}</p>${inner}</aside>\n`;
+        }
+        // Anything else is a prompt box. Short one-line prompts get a compact box.
+        const compact = !heading && tokens.length === 1 && tokens[0].type === "paragraph" && tokens[0].text.length <= 140;
+        return `<figure class="guide-prompt${compact ? " compact" : ""}"><figcaption><span>${esc(heading || (compact ? "Try" : "Try this prompt"))}</span><button type="button" class="guide-copy" data-copy hidden>${compact ? "Copy" : "Copy prompt"}</button></figcaption><div class="guide-prompt-text">${inner.trim()}</div></figure>\n`;
+      },
+      list(token) {
+        const tag = token.ordered ? "ol" : "ul";
+        const cls = token.ordered ? "guide-steps" : token.items.some((i) => i.task) ? "guide-checks" : "guide-list";
+        const start = token.ordered && token.start !== 1 && token.start !== "" ? ` start="${token.start}"` : "";
+        return `<${tag} class="${cls}"${start}>\n${token.items.map((i) => this.listitem(i)).join("")}</${tag}>\n`;
+      },
+      listitem(item) {
+        // An item that opens with bold text ("**Crop or cover anything personal.** …") shows that bold part as its heading.
+        const first = item.tokens.find((t) => t.type !== "checkbox");
+        const lead = first && "tokens" in first && first.tokens?.[0]?.type === "strong";
+        return `<li${lead ? ' class="has-lead"' : ""}>${this.parser.parse(item.tokens)}</li>\n`;
+      },
+      checkbox: () => "",
+    },
+  });
+  const html = md.parse(body, { async: false }) as string;
+  return { html, headings };
 }

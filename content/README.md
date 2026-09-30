@@ -57,6 +57,34 @@ Nothing becomes public automatically. A guide is only public once a person sets 
 ## Writing a guide
 
 - Follow the voice, plain-English and fact-checking rules in `/CLAUDE.md`.
-- Start sections with `##` (the page title is added automatically).
-- Put prompts readers can copy in a quote block (lines starting with `>`); they're styled as prompt boxes.
-- Raw HTML isn't run (it's shown as text), and only normal web, email and on-site links work.
+- Start sections with `##` (the page title is added automatically). Each `##` section is numbered and listed in "In this guide". Use `###` for smaller headings inside a section.
+- The first paragraph is shown larger, as an introduction. Keep paragraphs short.
+
+## Building blocks
+
+Every guide page uses the same design. These are written in ordinary Markdown, so no guide needs custom design work.
+
+| You write | It becomes |
+|---|---|
+| A quote block (lines starting with `>`) | A **prompt box** with a "Copy prompt" button. A short one-line prompt gets a compact box. |
+| `> [!prompt] The meal-plan prompt` on the first line | A prompt box with its own heading. |
+| `> [!privacy]` | A dark **Privacy first** panel. Use it wherever readers should think about what they share. |
+| `> [!warning] Allergies need a human check` | An amber **Important** panel for safety points and serious limits. |
+| `> [!tip]` | A pale blue **Tip** panel. |
+| `> [!note]` | A cream **Good to know** panel. |
+| `> [!quote]` | An ordinary quotation (not a prompt). |
+| A numbered list (`1.`, `2.` …) | **Numbered steps**. |
+| A task list (`- [x] item`) | A **tick list**, e.g. "What you'll need". |
+| A bulleted list (`- item`) | Blue-dot bullets. |
+| A list item starting with bold text (`- **Check the settings.** Most AI…`) | The bold part becomes the item's heading, for quick scanning. |
+
+Any panel takes an optional heading after the marker (`> [!tip] Save your prompt`); without one it uses the default label. Leave a line with just `>` after the marker line, then the content, for example:
+
+```
+> [!privacy]
+>
+> - **Crop or cover anything personal.** Letters on the fridge door, addresses, other people's names.
+> - **Check the settings.** Most AI assistants let you choose whether your conversations are used to improve their services.
+```
+
+Raw HTML isn't run (it's shown as text), and only normal web, email and on-site links work.
