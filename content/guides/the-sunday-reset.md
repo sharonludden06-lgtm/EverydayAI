@@ -12,14 +12,14 @@ order: 1
 
 Sunday evening. The week ahead has two after-school clubs, a late meeting, a birthday party and a dentist appointment, and somebody has just asked what's for tea on Tuesday.
 
-This guide shows you how to hand the first draft of that problem to an AI assistant. You take two photos, send one message, and get back a meal plan built around what's already in your fridge and what your week actually looks like. It takes about ten minutes the first time and five after that.
+This guide shows you how to hand the first draft of that problem to an AI assistant. You take a photo or two, send one message, and get back a meal plan built around what's already in your fridge and what your week actually looks like. It takes about ten minutes the first time and five after that.
 
 It won't be perfect, and it doesn't need to be. The point is to get past the blank page so you can spend your energy on the decisions only you can make.
 
 ## What you'll need
 
-- [x] **An AI assistant that can look at photos.** ChatGPT, Google Gemini, Microsoft Copilot and Claude can all do this, including on their free plans, through their apps or websites. Free plans may limit how many photos you can add each day, but one or two is all this needs.
-- [x] **A photo of your fridge** (and your cupboard, if you like). Open the door, stand back a little and take one clear picture. Two or three is fine if things are hidden behind the milk.
+- [x] **An AI assistant that can look at photos.** ChatGPT, Google Gemini, Microsoft Copilot and Claude can all do this, including on their free plans, through their apps or websites. Free plans may limit how many images or files you can upload, so stick to one or two photos.
+- [x] **A photo of your fridge** (and your cupboard, if you like). Open the door, stand back a little and take one clear picture. If things are hidden behind the milk, a second photo helps.
 - [x] **Your week.** A photo of the kitchen calendar, a screenshot of your phone calendar, or simply a few lines typed out, such as "Monday: swimming until 6. Tuesday: I'm home late."
 
 ## Before you take the photos
@@ -30,7 +30,7 @@ A quick privacy check, because photos often show more than we mean them to.
 >
 > - **Crop or cover anything personal.** Letters on the fridge door, a child's school name on a timetable, addresses, medical appointments with details, or other people's names.
 > - **Typing your week is often the safest option.** "Wednesday: after-school club, home at 5.30" tells the AI everything it needs without sharing who, where or which school.
-> - **Check the settings.** Most AI assistants let you choose whether your conversations are used to improve their services. It's worth a look in the settings or privacy section of whichever one you use.
+> - **Check the settings.** Most AI assistants let you choose whether your chats are used to train their AI. It's worth a look in the settings or privacy section. Switching this off doesn't necessarily mean your chats are deleted straight away: the company may still keep them for a while.
 
 ## The message to send
 
@@ -38,6 +38,7 @@ Add your photos to a new chat, then copy this message, changing the parts in squ
 
 > Here's a photo of my fridge and a summary of my week. Please plan evening meals for Monday to Friday for [2 adults and 2 children, ages 7 and 10].
 >
+> - First, list the ingredients you can see, so I can correct anything you've misread.
 > - Use what's already in the fridge first, especially anything that needs eating soon.
 > - Our busiest nights are [Tuesday and Thursday], so make those meals 20 minutes or less.
 > - [One child won't eat mushrooms. We don't eat pork.]
@@ -77,9 +78,9 @@ AI assistants are good at this kind of planning, but they do make mistakes. They
 
 If the plan works, the second week is quicker still.
 
-- **Keep the chat going.** Come back to the same conversation next Sunday and say "Same again for this week. Here's the fridge." It will remember your preferences within that chat.
+- **Keep the chat going.** Come back to the same conversation next Sunday and say "Same again for this week. Here's the fridge." It can see your earlier messages in that chat, so you won't need to explain your family's likes and dislikes again.
 - **Save your message.** Keep your version of the prompt in your phone's notes so you can paste it straight in.
-- **Ask for a favourites list.** After a few weeks, ask: "Which of the meals you've suggested did we keep? Make me a list of our ten regulars." That list alone can make busy weeks easier.
+- **Ask for a favourites list.** After a few weeks, tell it which meals went down well and ask: "Make me a list of our ten regular meals." That list alone can make busy weeks easier.
 
 ## The human bit
 
