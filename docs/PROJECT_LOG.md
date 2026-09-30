@@ -4,6 +4,7 @@ A lightweight record of important decisions and outstanding work. Newest first. 
 
 ## Decisions
 
+- **2026-09-30**: Stage 5 live: merged sharonludden06-lgtm/EverydayAI#5; Production deployment Ready. All four guides published (dated 30 September 2026) with "Read the guide" cards; checked on a production build of the merged code (live site not reachable from Claude's environment, so Sharon to confirm on the live site).
 - **2026-09-30**: Sharon approved the guide-page design direction. Applied it to the other three drafts (panels only where warranted), added Step/Prompt section labels; all four guides still coming-soon, awaiting individual Preview review before content/fact checking and publication.
 - **2026-09-30**: Sharon did not approve the first guide-page design (too text-heavy). Redesigned the shared `/resources/[slug]` template on the working branch: hero, contents list, reading column, and reusable Markdown building blocks (prompt boxes with Copy, privacy/warning/tip/note panels, steps, tick lists). The Sunday Reset is the test guide. Awaiting Preview review; not merged.
 - **2026-09-30**: Stage 5 built and tested on the working branch (not in `main`): `lib/guides.ts` reads `content/guides/*.md` (how-to in `content/README.md`), cards and `/resources/<slug>` pages generated, Preview shows unpublished guides with a banner. Four guide drafts added (status coming-soon, one commit each) for Sharon's review. ChatGPT's free-plan upload limit is only partially verified (OpenAI help page unreadable), so guides don't state a number. Awaiting Preview review.
