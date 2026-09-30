@@ -42,7 +42,7 @@ A lightweight record of important decisions and outstanding work. Newest first. 
 
 ## Outstanding work
 
-- [ ] Stage 5: Sharon to review the guide system and the four drafts on Preview; then approve merge. Guides stay "coming soon" until she approves each one for publishing.
+- [x] Stage 5: guide publishing system and the four guides reviewed, approved and live (merged sharonludden06-lgtm/EverydayAI#5, 30 September 2026).
 - [ ] Newsletter is in rehearsal mode; going live needs the domain verified in Resend, then `NEWSLETTER_FROM` and `SENDING_ENABLED=true` set in Vercel (Sharon to do, or approve).
 - [ ] No automated checks (tests/linting) yet; consider adding a simple type-check.
 - [ ] Future: glossary page for technical terms.
