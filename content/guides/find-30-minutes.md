@@ -12,7 +12,7 @@ order: 4
 
 Most of us don't lose time in big chunks. We lose it in small, repeated bits of admin: checking the same inbox eight times, rewriting similar emails, hunting for the same form, reminding people of the same things.
 
-Those bits are hard to spot because they're spread across the week. That's where an AI assistant can help. It's good at looking at a list of what you did and noticing patterns you're too close to see.
+Those bits are hard to spot because they're spread across the week. That's where an AI assistant can help. It can be good at looking at a list of what you did and noticing patterns you're too close to see.
 
 This guide walks you through a simple, three-step exercise. It takes about 20 minutes, and the aim is modest: find 30 minutes a week you'd rather spend on something else.
 
@@ -40,7 +40,7 @@ Add a rough time next to each if you can: "about 15 minutes a day", "an hour on 
 
 ## Step 2: Ask the AI to spot the patterns
 
-Paste your list into a new chat with this message (often called a "prompt"):
+Copy this message (often called a "prompt") into a new chat, and replace [paste your list] with your own list:
 
 > Here's a rough list of my regular tasks in a typical week, with approximate times.
 >
@@ -72,7 +72,7 @@ Choose **one** change, the easiest one, and try it for a week. Then come back to
 
 It can also help you with the change itself. For example:
 
-> Write me three template replies for the questions parents ask most about school dinners.
+> Here are the three questions parents ask me most about school dinners: [question 1], [question 2], [question 3]. Write a short, friendly template reply for each.
 
 Remember to add names and details yourself afterwards.
 
