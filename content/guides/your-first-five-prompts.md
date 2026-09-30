@@ -14,7 +14,7 @@ If you've opened an AI assistant, looked at the empty box and thought "what am I
 
 A **prompt** is simply the message you type to an AI assistant: your question or instruction. There's no special language to learn. The best prompts are just clear requests, written the way you'd explain something to a capable new colleague.
 
-Below are five prompts that are genuinely useful for ordinary life. Copy them, paste them in, and change the parts in square brackets to fit your situation.
+Below are five prompts that work well in everyday life. Copy them, paste them in, and change the parts in square brackets to fit your situation.
 
 ## Where to type them
 
@@ -27,6 +27,10 @@ You'll need an AI assistant. The best-known ones are **ChatGPT**, **Google Gemin
 ## Prompt 1: Make this simpler
 
 For letters, forms, terms and conditions, school newsletters, or anything written in official language.
+
+> [!privacy]
+>
+> Before you paste, remove names, addresses and any account or reference numbers. The AI doesn't need them to explain the letter.
 
 > Explain this in plain English, as if to a friend. Then tell me the three things I actually need to do, and by when.
 >
@@ -69,13 +73,13 @@ For things you've always meant to understand: how pensions work, what an ISA is,
 > I'd like to understand [how a stocks and shares ISA works]. I'm a complete beginner. Explain it in three short parts, with an everyday example, and then ask me a question to check I've understood.
 
 - **Why it works:** Asking it to check your understanding turns a one-way explanation into something closer to a patient tutor.
-- **Check:** AI explanations are usually a good starting point, but they can be out of date or wrong. For decisions about money, health or the law, use reliable official sources (such as GOV.UK or the NHS website) or a qualified professional.
+- **Check:** AI explanations are usually a good starting point, but they can be out of date or wrong. For decisions about money, health or the law, use reliable official sources (such as GOV.UK, MoneyHelper or the NHS website) or a qualified professional.
 
 ## Three habits that make every prompt better
 
 - **Give it context.** Who it's for, what it's for, and anything it should avoid.
 - **Say what you want back.** A list, a table, three options, 100 words, a friendly tone.
-- **Reply, don't restart.** If the first answer isn't right, say what to change: "shorter", "less formal", "try again with fewer ingredients". The follow-up is where most of the value is.
+- **Reply, don't restart.** If the first answer isn't right, say what to change: "shorter", "less formal", "give me three options instead". The follow-up is where most of the value is.
 
 ## The human bit
 
