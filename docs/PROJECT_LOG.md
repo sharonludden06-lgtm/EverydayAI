@@ -4,6 +4,7 @@ A lightweight record of important decisions and outstanding work. Newest first. 
 
 ## Decisions
 
+- **2026-09-30**: Sharon switched Friday research on for the live site. First live run: Friday 2 October (about 5am–11am UK time); summary email and a read-only database check to follow.
 - **2026-09-30**: Resources fix is live (sharonludden06-lgtm/EverydayAI#4): Production deployment Ready, and Sharon confirmed the live Resources page is correct. Stage 4 was merged earlier (sharonludden06-lgtm/EverydayAI#3), with Friday research still switched off.
 - **2026-09-30**: Resources filters found not to work (placeholder since the site's first version, not caused by Stage 4). Built on the working branch: real filter buttons (Home & family, Work, Prompts, Tools), a "Tools are coming" message linking to the existing sign-up, and "Guide coming soon" instead of dead "Open guide" links. Cards still hard-coded. Awaiting Preview check.
 - **2026-09-29**: Approved and built: Friday "try again later" protection. Only a 503/529 refusal of a step's first request is left for the next Friday job (max 2 attempts, never in the same job); timeouts, cut-offs and other errors still aren't retried; manual research unchanged. Tested locally (8 scenarios).
@@ -42,4 +43,4 @@ A lightweight record of important decisions and outstanding work. Newest first. 
 - [ ] Future: glossary page for technical terms.
 - [ ] Future: create the remaining specialist agents (Content, Website, AI Adoption Consultant, Education AI) when ready.
 - [ ] Supabase fallback period: watch the first Saturday draft and Sunday send; later decide whether to retire Neon (Sharon's approval).
-- [ ] Automated research: Stages 3 and 4 are live; Friday research is off. Next: switch on (planned Thursday 1 October), then check the first live Friday (2 October) and its summary email. Stage 5 (feed Saturday) needs separate approval.
+- [ ] Automated research: Stages 3 and 4 are live. Friday research switched on 30 September. Next: check the first live Friday (2 October) and its summary email. Stage 5 (feed Saturday) needs separate approval.
