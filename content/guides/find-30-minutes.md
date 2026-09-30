@@ -18,8 +18,8 @@ This guide walks you through a simple, three-step exercise. It takes about 20 mi
 
 ## What you'll need
 
-- **An AI assistant**, such as ChatGPT, Google Gemini, Microsoft Copilot or Claude. The free plans are fine.
-- **A rough record of a normal week.** This could be a list you jot down as you go, your calendar, or simply your best memory of last week.
+- [x] **An AI assistant**, such as ChatGPT, Google Gemini, Microsoft Copilot or Claude. The free plans are fine.
+- [x] **A rough record of a normal week.** This could be a list you jot down as you go, your calendar, or simply your best memory of last week.
 
 ## Step 1: Write down your week (roughly)
 
@@ -34,7 +34,9 @@ Spend ten minutes listing the regular tasks that fill your working week, or your
 
 Add a rough time next to each if you can: "about 15 minutes a day", "an hour on Fridays".
 
-**Privacy note:** describe tasks, not people. "Chase suppliers for invoices" is enough. Don't paste in real emails, names, customer details, pupil information or anything confidential. If you'd rather share a screenshot of your calendar, cover or crop out names and private details first, and follow your organisation's rules on which AI tools you can use for work.
+> [!privacy]
+>
+> Describe tasks, not people. "Chase suppliers for invoices" is enough. Don't paste in real emails, names, customer details, pupil information or anything confidential. If you'd rather share a screenshot of your calendar, cover or crop out names and private details first, and follow your organisation's rules on which AI tools you can use for work.
 
 ## Step 2: Ask the AI to spot the patterns
 
@@ -68,7 +70,11 @@ Choose **one** change, the easiest one, and try it for a week. Then come back to
 
 > I tried batching my emails. It saved time but I missed an urgent message on Tuesday. Can you suggest a way round that?
 
-It can also help you with the change itself. For example: "Write me three template replies for the questions parents ask most about school dinners." Remember to add names and details yourself afterwards.
+It can also help you with the change itself. For example:
+
+> Write me three template replies for the questions parents ask most about school dinners.
+
+Remember to add names and details yourself afterwards.
 
 ## Keep expectations realistic
 
