@@ -18,17 +18,19 @@ It won't be perfect, and it doesn't need to be. The point is to get past the bla
 
 ## What you'll need
 
-- **An AI assistant that can look at photos.** ChatGPT, Google Gemini, Microsoft Copilot and Claude can all do this, including on their free plans, through their apps or websites. Free plans may limit how many photos you can add each day, but one or two is all this needs.
-- **A photo of your fridge** (and your cupboard, if you like). Open the door, stand back a little and take one clear picture. Two or three is fine if things are hidden behind the milk.
-- **Your week.** A photo of the kitchen calendar, a screenshot of your phone calendar, or simply a few lines typed out, such as "Monday: swimming until 6. Tuesday: I'm home late."
+- [x] **An AI assistant that can look at photos.** ChatGPT, Google Gemini, Microsoft Copilot and Claude can all do this, including on their free plans, through their apps or websites. Free plans may limit how many photos you can add each day, but one or two is all this needs.
+- [x] **A photo of your fridge** (and your cupboard, if you like). Open the door, stand back a little and take one clear picture. Two or three is fine if things are hidden behind the milk.
+- [x] **Your week.** A photo of the kitchen calendar, a screenshot of your phone calendar, or simply a few lines typed out, such as "Monday: swimming until 6. Tuesday: I'm home late."
 
 ## Before you take the photos
 
 A quick privacy check, because photos often show more than we mean them to.
 
-- **Crop or cover anything personal.** Letters on the fridge door, a child's school name on a timetable, addresses, medical appointments with details, or other people's names.
-- **Typing your week is often the safest option.** "Wednesday: after-school club, home at 5.30" tells the AI everything it needs without sharing who, where or which school.
-- **Check the settings.** Most AI assistants let you choose whether your conversations are used to improve their services. It's worth a look in the settings or privacy section of whichever one you use.
+> [!privacy]
+>
+> - **Crop or cover anything personal.** Letters on the fridge door, a child's school name on a timetable, addresses, medical appointments with details, or other people's names.
+> - **Typing your week is often the safest option.** "Wednesday: after-school club, home at 5.30" tells the AI everything it needs without sharing who, where or which school.
+> - **Check the settings.** Most AI assistants let you choose whether your conversations are used to improve their services. It's worth a look in the settings or privacy section of whichever one you use.
 
 ## The message to send
 
@@ -65,8 +67,11 @@ AI assistants are good at this kind of planning, but they do make mistakes. They
 
 - **It may misread the photo.** A jar of pesto can be mistaken for something else, and anything hidden at the back won't be seen at all. Glance down the list of ingredients it thinks you have and correct it: "There's no cheddar. That was butter."
 - **It doesn't know your use-by dates** unless you tell it, and it can't smell the milk.
-- **Allergies need a human check.** If anyone in your family has a food allergy, don't rely on an AI to keep them safe. Always check recipes and ingredient labels yourself.
 - **Cooking times are estimates.** "20 minutes" can mean 20 minutes for a confident cook with everything chopped.
+
+> [!warning] Allergies need a human check
+>
+> If anyone in your family has a food allergy, don't rely on an AI to keep them safe. Always check recipes and ingredient labels yourself.
 
 ## Make it a habit
 
