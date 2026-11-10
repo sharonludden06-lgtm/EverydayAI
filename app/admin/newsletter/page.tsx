@@ -71,7 +71,7 @@ export default async function NewsletterAdmin({
         <div>
           <p className="eyebrow">Private dashboard</p>
           <h1>The Sunday Edit</h1>
-          <p>A draft is written every Saturday morning. Approve it and it goes out on Sunday at about 8am.</p>
+          <p>A draft is written every Saturday at about 7am UK time (6am in winter). Approve it and it goes out on Sunday at about 8am (7am in winter).</p>
         </div>
       </div>
 
